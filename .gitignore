@@ -29,3 +29,5 @@ Thumbs.db
 # Claude Code project docs/agent config (kept locally, not tracked in this repo)
 .claude/
 docs/
+CLAUDE.md
+CLAUDE.md.template
