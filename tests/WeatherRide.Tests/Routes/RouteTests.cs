@@ -41,4 +41,17 @@ public class RouteTests
 
         Assert.Throws<RouteValidationException>(() => Route.Create(points));
     }
+
+    [Fact]
+    public void Create_ThreePoints_CumulativeDistancesKmIsPrefixSumStartingAtZero()
+    {
+        var points = new[] { new GpsPoint(0, 0), new GpsPoint(0, 4), new GpsPoint(1, 4) };
+
+        var route = Route.Create(points);
+
+        Assert.Equal(3, route.CumulativeDistancesKm.Count);
+        Assert.Equal(0, route.CumulativeDistancesKm[0]);
+        Assert.Equal(points[0].DistanceToKm(points[1]), route.CumulativeDistancesKm[1], precision: 9);
+        Assert.Equal(route.TotalDistanceKm, route.CumulativeDistancesKm[^1], precision: 9);
+    }
 }

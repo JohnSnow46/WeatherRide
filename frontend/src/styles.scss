@@ -1,1 +1,12 @@
 /* You can add global styles to this file, and also import other style files */
+@import 'leaflet/dist/leaflet.css';
+
+/* Leaflet renders divIcon markers outside Angular's component tree (appended directly to
+   the map's DOM via the Leaflet JS API), so Angular's emulated view encapsulation never
+   applies to them. This rule must live in global styles rather than a component .scss. */
+.route-map-moving-marker {
+  background: #ef4444;
+  border-radius: 50%;
+  border: 2px solid white;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
+}

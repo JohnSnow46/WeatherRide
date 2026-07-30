@@ -28,3 +28,7 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+// Required so WebApplicationFactory<Program> can reference the class generated
+// from top-level statements (Api integration tests).
+public partial class Program { }

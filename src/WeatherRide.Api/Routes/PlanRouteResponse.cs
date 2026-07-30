@@ -5,4 +5,5 @@ namespace WeatherRide.Api.Routes;
 /// </summary>
 public sealed record PlanRouteResponse(
     double TotalDistanceKm,
-    IReadOnlyList<RouteSampleResponse> Samples);
+    IReadOnlyList<RouteSampleResponse> Samples,
+    IReadOnlyList<TrackPointResponse> Track);

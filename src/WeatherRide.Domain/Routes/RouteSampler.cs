@@ -17,7 +17,7 @@ public static class RouteSampler
     public static IReadOnlyList<RouteSample> Sample(Route route, TripPlan tripPlan, int requestedSampleCount)
     {
         var sampleCount = Math.Clamp(requestedSampleCount, MinSamples, MaxSamples);
-        var cumulativeDistances = BuildCumulativeDistances(route.Points);
+        var cumulativeDistances = route.CumulativeDistancesKm;
         var stepKm = route.TotalDistanceKm / (sampleCount - 1);
 
         var samples = new List<RouteSample>(sampleCount);
@@ -39,21 +39,9 @@ public static class RouteSampler
         return samples;
     }
 
-    private static double[] BuildCumulativeDistances(IReadOnlyList<GpsPoint> points)
-    {
-        var cumulativeDistances = new double[points.Count];
-
-        for (var i = 1; i < points.Count; i++)
-        {
-            cumulativeDistances[i] = cumulativeDistances[i - 1] + points[i - 1].DistanceToKm(points[i]);
-        }
-
-        return cumulativeDistances;
-    }
-
     private static GpsPoint InterpolatePosition(
         IReadOnlyList<GpsPoint> points,
-        double[] cumulativeDistances,
+        IReadOnlyList<double> cumulativeDistances,
         double targetDistanceKm)
     {
         var lastIndex = points.Count - 1;

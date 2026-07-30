@@ -47,9 +47,13 @@ public sealed class RoutesController : ControllerBase
             request.SampleCount,
             ct);
 
+        var track = result.Route.Points
+            .Select((point, i) => new TrackPointResponse(point.Latitude, point.Longitude, result.Route.CumulativeDistancesKm[i]))
+            .ToList();
+
         var response = new PlanRouteResponse(
-            result[^1].Sample.DistanceFromStartKm,
-            result
+            result.Route.TotalDistanceKm,
+            result.Samples
                 .Select(x => new RouteSampleResponse(
                     x.Sample.Position.Latitude,
                     x.Sample.Position.Longitude,
@@ -58,7 +62,8 @@ public sealed class RoutesController : ControllerBase
                     x.Weather is null
                         ? null
                         : new WeatherForecastResponse(x.Weather.TemperatureCelsius, x.Weather.WindSpeedKmh, x.Weather.PrecipitationMm)))
-                .ToList());
+                .ToList(),
+            track);
 
         return Ok(response);
     }

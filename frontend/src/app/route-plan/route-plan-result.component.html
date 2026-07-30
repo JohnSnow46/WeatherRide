@@ -1,0 +1,23 @@
+@if (routePlanStateService.result(); as result) {
+  <section class="route-plan-result">
+    <h2>Route plan</h2>
+    <p class="total-distance">Total distance: {{ result.totalDistanceKm.toFixed(1) }} km</p>
+
+    <ul class="samples">
+      @for (sample of result.samples; track sample.distanceFromStartKm) {
+        <li class="sample">
+          <span class="distance">{{ sample.distanceFromStartKm.toFixed(1) }} km</span>
+          <span class="eta">ETA: {{ formatEta(sample.etaAt) }}</span>
+          @if (sample.weather; as weather) {
+            <span class="weather">
+              {{ weather.temperatureCelsius }}&deg;C, wind {{ weather.windSpeedKmh }} km/h, precipitation
+              {{ weather.precipitationMm }} mm
+            </span>
+          } @else {
+            <span class="weather no-forecast">No forecast available</span>
+          }
+        </li>
+      }
+    </ul>
+  </section>
+}

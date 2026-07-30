@@ -1,0 +1,7 @@
+<section class="route-map-section">
+  <h2>Route map</h2>
+  @if (!routePlanStateService.result()) {
+    <p class="route-map-empty">Upload a GPX file to see the route map.</p>
+  }
+  <div #mapContainer class="route-map"></div>
+</section>

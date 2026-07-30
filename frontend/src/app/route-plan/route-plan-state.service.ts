@@ -7,4 +7,5 @@ export class RoutePlanStateService {
   result = signal<PlanRouteResponse | null>(null);
   error = signal<string | null>(null);
   isLoading = signal(false);
+  selectedDistanceKm = signal(0);
 }

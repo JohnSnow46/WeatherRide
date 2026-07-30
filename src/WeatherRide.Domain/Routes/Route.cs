@@ -10,10 +10,13 @@ public sealed class Route
 
     public double TotalDistanceKm { get; }
 
-    private Route(IReadOnlyList<GpsPoint> points, double totalDistanceKm)
+    public IReadOnlyList<double> CumulativeDistancesKm { get; }
+
+    private Route(IReadOnlyList<GpsPoint> points, double totalDistanceKm, double[] cumulativeDistancesKm)
     {
         Points = points;
         TotalDistanceKm = totalDistanceKm;
+        CumulativeDistancesKm = cumulativeDistancesKm;
     }
 
     /// <summary>
@@ -31,26 +34,27 @@ public sealed class Route
             throw new RouteValidationException("Trasa musi mieć co najmniej 2 punkty.");
         }
 
-        var totalDistanceKm = CalculateTotalDistanceKm(points);
+        var cumulativeDistancesKm = CalculateCumulativeDistancesKm(points);
+        var totalDistanceKm = cumulativeDistancesKm[^1];
 
         if (totalDistanceKm <= 0)
         {
             throw new RouteValidationException("Trasa jest zdegenerowana — dystans całkowity musi być większy od zera.");
         }
 
-        return new Route(points, totalDistanceKm);
+        return new Route(points, totalDistanceKm, cumulativeDistancesKm);
     }
 
-    private static double CalculateTotalDistanceKm(IReadOnlyList<GpsPoint> points)
+    private static double[] CalculateCumulativeDistancesKm(IReadOnlyList<GpsPoint> points)
     {
-        var total = 0.0;
+        var cumulative = new double[points.Count];
 
         for (var i = 1; i < points.Count; i++)
         {
-            total += points[i - 1].DistanceToKm(points[i]);
+            cumulative[i] = cumulative[i - 1] + points[i - 1].DistanceToKm(points[i]);
         }
 
-        return total;
+        return cumulative;
     }
 }
 

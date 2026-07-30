@@ -16,7 +16,7 @@ public class PlanTripUseCaseTests
         var route = Route.Create(new[] { new GpsPoint(0, 0), new GpsPoint(0, 4), new GpsPoint(1, 4) });
         var useCase = new PlanTripUseCase(new FakeGpxParser(route), new FakeWeatherClient());
 
-        var samples = await useCase.PlanAsync(
+        var result = await useCase.PlanAsync(
             gpxContent: Stream.Null,
             departureAt: DepartureAt,
             averageSpeedKmh: 30,
@@ -24,7 +24,7 @@ public class PlanTripUseCaseTests
             sampleCount: 12,
             cancellationToken: CancellationToken.None);
 
-        Assert.Equal(12, samples.Count);
+        Assert.Equal(12, result.Samples.Count);
     }
 
     [Fact]
@@ -63,10 +63,10 @@ public class PlanTripUseCaseTests
             sampleCount: 5,
             cancellationToken: CancellationToken.None);
 
-        Assert.Equal(5, result.Count);
-        for (var i = 0; i < result.Count; i++)
+        Assert.Equal(5, result.Samples.Count);
+        for (var i = 0; i < result.Samples.Count; i++)
         {
-            Assert.Same(forecasts[i], result[i].Weather);
+            Assert.Same(forecasts[i], result.Samples[i].Weather);
         }
     }
 

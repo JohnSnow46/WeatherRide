@@ -73,6 +73,7 @@ export class RoutePlanFormComponent {
       .subscribe({
         next: (response) => {
           this.routePlanStateService.result.set(response);
+          this.routePlanStateService.selectedDistanceKm.set(0);
           this.routePlanStateService.isLoading.set(false);
         },
         error: (err) => {

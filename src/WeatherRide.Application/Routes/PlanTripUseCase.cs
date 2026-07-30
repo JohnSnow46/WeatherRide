@@ -19,7 +19,7 @@ public sealed class PlanTripUseCase
         _weatherClient = weatherClient;
     }
 
-    public async Task<IReadOnlyList<RouteSampleWeather>> PlanAsync(
+    public async Task<TripPlanResult> PlanAsync(
         Stream gpxContent,
         DateTimeOffset departureAt,
         double? averageSpeedKmh,
@@ -35,6 +35,6 @@ public sealed class PlanTripUseCase
 
         var forecasts = await _weatherClient.GetForecastsAsync(samples, cancellationToken);
 
-        return samples.Select((sample, i) => new RouteSampleWeather(sample, forecasts[i])).ToList();
+        return new TripPlanResult(route, samples.Select((sample, i) => new RouteSampleWeather(sample, forecasts[i])).ToList());
     }
 }
