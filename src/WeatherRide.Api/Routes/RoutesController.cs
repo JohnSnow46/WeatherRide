@@ -1,0 +1,65 @@
+using Microsoft.AspNetCore.Mvc;
+using WeatherRide.Application.Routes;
+
+namespace WeatherRide.Api.Routes;
+
+[ApiController]
+[Route("api/routes")]
+public sealed class RoutesController : ControllerBase
+{
+    private readonly PlanTripUseCase _planTripUseCase;
+
+    public RoutesController(PlanTripUseCase planTripUseCase)
+    {
+        _planTripUseCase = planTripUseCase;
+    }
+
+    /// <summary>
+    /// Przyjmuje plik GPX + parametry wyjazdu i zwraca próbkowane punkty trasy z ETA i
+    /// prognozą pogody z Open-Meteo.
+    /// </summary>
+    [HttpPost("plan")]
+    public async Task<ActionResult<PlanRouteResponse>> Plan([FromForm] PlanRouteRequest request, CancellationToken ct)
+    {
+        if (request.GpxFile is null || request.GpxFile.Length == 0)
+        {
+            return Problem(
+                title: "Nieprawidłowe dane wejściowe",
+                detail: "Plik GPX jest wymagany.",
+                statusCode: StatusCodes.Status400BadRequest);
+        }
+
+        if (request.AverageSpeedKmh.HasValue == request.PlannedDurationMinutes.HasValue)
+        {
+            return Problem(
+                title: "Nieprawidłowe dane wejściowe",
+                detail: "Podaj albo średnią prędkość, albo czas trasy, nie oba.",
+                statusCode: StatusCodes.Status400BadRequest);
+        }
+
+        await using var gpxStream = request.GpxFile.OpenReadStream();
+
+        var result = await _planTripUseCase.PlanAsync(
+            gpxStream,
+            request.DepartureAt,
+            request.AverageSpeedKmh,
+            request.PlannedDurationMinutes,
+            request.SampleCount,
+            ct);
+
+        var response = new PlanRouteResponse(
+            result[^1].Sample.DistanceFromStartKm,
+            result
+                .Select(x => new RouteSampleResponse(
+                    x.Sample.Position.Latitude,
+                    x.Sample.Position.Longitude,
+                    x.Sample.DistanceFromStartKm,
+                    x.Sample.EtaAt,
+                    x.Weather is null
+                        ? null
+                        : new WeatherForecastResponse(x.Weather.TemperatureCelsius, x.Weather.WindSpeedKmh, x.Weather.PrecipitationMm)))
+                .ToList());
+
+        return Ok(response);
+    }
+}

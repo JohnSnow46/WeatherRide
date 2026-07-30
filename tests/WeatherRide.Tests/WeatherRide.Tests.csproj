@@ -21,6 +21,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\WeatherRide.Domain\WeatherRide.Domain.csproj" />
     <ProjectReference Include="..\..\src\WeatherRide.Application\WeatherRide.Application.csproj" />
+    <ProjectReference Include="..\..\src\WeatherRide.Infrastructure\WeatherRide.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
