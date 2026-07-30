@@ -1,0 +1,27 @@
+# .NET
+bin/
+obj/
+*.user
+*.suo
+.vs/
+*.sln.docstates
+
+# appsettings secrets (use dotnet user-secrets or appsettings.*.local.json for real API keys, never commit them)
+appsettings.*.local.json
+
+# Test results
+[Tt]est[Rr]esult*/
+*.trx
+
+# Node / Angular (frontend/ has its own .gitignore too; this is a root-level backstop)
+node_modules/
+dist/
+.angular/
+
+# IDE
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
