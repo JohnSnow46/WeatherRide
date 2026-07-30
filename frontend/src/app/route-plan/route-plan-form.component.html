@@ -1,0 +1,54 @@
+<form class="route-plan-form" [formGroup]="form" (ngSubmit)="onSubmit()">
+  <div class="field">
+    <label for="gpxFile">GPX file</label>
+    <input id="gpxFile" type="file" accept=".gpx" (change)="onFileSelected($event)" />
+  </div>
+
+  <div class="field">
+    <label for="departureAt">Departure time</label>
+    <input id="departureAt" type="datetime-local" formControlName="departureAt" />
+  </div>
+
+  <div class="field">
+    <span class="field-label">Pace input</span>
+    <label class="radio-option">
+      <input type="radio" formControlName="speedMode" value="speed" />
+      Average speed
+    </label>
+    <label class="radio-option">
+      <input type="radio" formControlName="speedMode" value="duration" />
+      Planned duration
+    </label>
+  </div>
+
+  @if (speedMode() === 'speed') {
+    <div class="field">
+      <label for="averageSpeedKmh">Average speed (km/h)</label>
+      <input id="averageSpeedKmh" type="number" min="0" formControlName="averageSpeedKmh" />
+    </div>
+  }
+
+  @if (speedMode() === 'duration') {
+    <div class="field">
+      <label for="plannedDurationMinutes">Planned duration (minutes)</label>
+      <input id="plannedDurationMinutes" type="number" min="0" formControlName="plannedDurationMinutes" />
+    </div>
+  }
+
+  <div class="field">
+    <label for="sampleCount">Sample density: {{ sampleCount() }} points</label>
+    <input id="sampleCount" type="range" min="5" max="50" formControlName="sampleCount" />
+  </div>
+
+  <button type="submit" [disabled]="!canSubmit() || routePlanStateService.isLoading()">
+    Plan route
+  </button>
+
+  @if (routePlanStateService.isLoading()) {
+    <p class="status">Planning your route…</p>
+  }
+
+  @if (routePlanStateService.error(); as errorMessage) {
+    <p class="status error">{{ errorMessage }}</p>
+  }
+</form>
