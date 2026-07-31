@@ -61,7 +61,11 @@ public sealed class RoutesController : ControllerBase
                     x.Sample.EtaAt,
                     x.Weather is null
                         ? null
-                        : new WeatherForecastResponse(x.Weather.TemperatureCelsius, x.Weather.WindSpeedKmh, x.Weather.PrecipitationMm)))
+                        : new WeatherForecastResponse(
+                            x.Weather.TemperatureCelsius,
+                            x.Weather.WindSpeedKmh,
+                            x.Weather.PrecipitationMm,
+                            x.Weather.WindDirectionDegrees)))
                 .ToList(),
             track);
 

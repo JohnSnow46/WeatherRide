@@ -47,10 +47,10 @@ public class PlanTripUseCaseTests
         var route = Route.Create(new[] { new GpsPoint(0, 0), new GpsPoint(0, 4), new GpsPoint(1, 4) });
         var forecasts = new WeatherForecast?[]
         {
-            new(18.0, 10.0, 0.0),
+            new(18.0, 10.0, 0.0, 180.0),
             null,
-            new(22.0, 15.0, 1.0),
-            new(19.5, 8.0, 0.5),
+            new(22.0, 15.0, 1.0, 220.0),
+            new(19.5, 8.0, 0.5, 90.0),
             null,
         };
         var useCase = new PlanTripUseCase(new FakeGpxParser(route), new FakeWeatherClient(forecasts));

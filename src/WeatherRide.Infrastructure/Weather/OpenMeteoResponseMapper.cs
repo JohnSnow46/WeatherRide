@@ -33,7 +33,8 @@ public static class OpenMeteoResponseMapper
         return new WeatherForecast(
             hourly.Temperature2m[closestIndex],
             hourly.WindSpeed10m[closestIndex],
-            hourly.Precipitation[closestIndex]);
+            hourly.Precipitation[closestIndex],
+            hourly.WindDirection10m[closestIndex]);
     }
 
     private static DateTime[] ParseTimes(string[] time) =>

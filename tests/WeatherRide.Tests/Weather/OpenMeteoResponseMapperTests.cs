@@ -16,6 +16,7 @@ public class OpenMeteoResponseMapperTests
             ],
             Temperature2m = [18.0, 20.5, 22.0],
             WindSpeed10m = [10.0, 12.5, 15.0],
+            WindDirection10m = [180.0, 200.0, 220.0],
             Precipitation = [0.0, 0.2, 1.0],
         },
     };
@@ -32,6 +33,7 @@ public class OpenMeteoResponseMapperTests
         Assert.Equal(20.5, forecast!.TemperatureCelsius);
         Assert.Equal(12.5, forecast.WindSpeedKmh);
         Assert.Equal(0.2, forecast.PrecipitationMm);
+        Assert.Equal(200.0, forecast.WindDirectionDegrees);
     }
 
     [Fact]

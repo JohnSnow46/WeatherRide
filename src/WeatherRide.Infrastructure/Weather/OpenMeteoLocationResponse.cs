@@ -23,6 +23,9 @@ public sealed class OpenMeteoLocationResponse
         [JsonPropertyName("wind_speed_10m")]
         public double[] WindSpeed10m { get; set; } = [];
 
+        [JsonPropertyName("wind_direction_10m")]
+        public double[] WindDirection10m { get; set; } = [];
+
         [JsonPropertyName("precipitation")]
         public double[] Precipitation { get; set; } = [];
     }
