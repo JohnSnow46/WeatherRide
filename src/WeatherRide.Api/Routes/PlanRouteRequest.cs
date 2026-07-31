@@ -18,7 +18,7 @@ public sealed class PlanRouteRequest
     public double? AverageSpeedKmh { get; set; }
 
     [FromForm]
-    public double? PlannedDurationMinutes { get; set; }
+    public double? PlannedDurationHours { get; set; }
 
     [FromForm]
     public int? SampleCount { get; set; }

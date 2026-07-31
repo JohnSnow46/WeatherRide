@@ -12,7 +12,7 @@ export class RoutePlanApiService {
     gpxFile: File,
     departureAtIso: string,
     averageSpeedKmh: number | null,
-    plannedDurationMinutes: number | null,
+    plannedDurationHours: number | null,
     sampleCount: number
   ): Observable<PlanRouteResponse> {
     const formData = new FormData();
@@ -21,8 +21,8 @@ export class RoutePlanApiService {
     if (averageSpeedKmh !== null) {
       formData.append('AverageSpeedKmh', averageSpeedKmh.toString());
     }
-    if (plannedDurationMinutes !== null) {
-      formData.append('PlannedDurationMinutes', plannedDurationMinutes.toString());
+    if (plannedDurationHours !== null) {
+      formData.append('PlannedDurationHours', plannedDurationHours.toString());
     }
     formData.append('SampleCount', sampleCount.toString());
 

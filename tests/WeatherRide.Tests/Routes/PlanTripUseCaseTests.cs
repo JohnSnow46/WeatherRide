@@ -20,7 +20,7 @@ public class PlanTripUseCaseTests
             gpxContent: Stream.Null,
             departureAt: DepartureAt,
             averageSpeedKmh: 30,
-            plannedDurationMinutes: null,
+            plannedDurationHours: null,
             sampleCount: 12,
             cancellationToken: CancellationToken.None);
 
@@ -36,7 +36,7 @@ public class PlanTripUseCaseTests
             gpxContent: Stream.Null,
             departureAt: DepartureAt,
             averageSpeedKmh: 30,
-            plannedDurationMinutes: null,
+            plannedDurationHours: null,
             sampleCount: 10,
             cancellationToken: CancellationToken.None));
     }
@@ -59,7 +59,7 @@ public class PlanTripUseCaseTests
             gpxContent: Stream.Null,
             departureAt: DepartureAt,
             averageSpeedKmh: 30,
-            plannedDurationMinutes: null,
+            plannedDurationHours: null,
             sampleCount: 5,
             cancellationToken: CancellationToken.None);
 

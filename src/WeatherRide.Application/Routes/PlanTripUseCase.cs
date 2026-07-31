@@ -23,13 +23,13 @@ public sealed class PlanTripUseCase
         Stream gpxContent,
         DateTimeOffset departureAt,
         double? averageSpeedKmh,
-        double? plannedDurationMinutes,
+        double? plannedDurationHours,
         int? sampleCount,
         CancellationToken cancellationToken)
     {
         var route = await _gpxParser.ParseAsync(gpxContent, cancellationToken);
 
-        var tripPlan = TripPlan.Create(departureAt, route.TotalDistanceKm, averageSpeedKmh, plannedDurationMinutes);
+        var tripPlan = TripPlan.Create(departureAt, route.TotalDistanceKm, averageSpeedKmh, plannedDurationHours);
 
         var samples = RouteSampler.Sample(route, tripPlan, sampleCount ?? RouteSampler.MaxSamples);
 

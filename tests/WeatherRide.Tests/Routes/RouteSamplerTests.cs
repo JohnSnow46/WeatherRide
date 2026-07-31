@@ -15,7 +15,7 @@ public class RouteSamplerTests
     public void Sample_RequestedCountOutsideBounds_ClampsToNearestBound(int requestedSampleCount, int expectedSampleCount)
     {
         var route = Route.Create(new[] { new GpsPoint(0, 0), new GpsPoint(0, 4) });
-        var tripPlan = TripPlan.Create(DepartureAt, route.TotalDistanceKm, averageSpeedKmh: 50, plannedDurationMinutes: null);
+        var tripPlan = TripPlan.Create(DepartureAt, route.TotalDistanceKm, averageSpeedKmh: 50, plannedDurationHours: null);
 
         var samples = RouteSampler.Sample(route, tripPlan, requestedSampleCount);
 
@@ -26,7 +26,7 @@ public class RouteSamplerTests
     public void Sample_ValidRequestedCount_ReturnsExactlyThatManySamples()
     {
         var route = Route.Create(new[] { new GpsPoint(0, 0), new GpsPoint(0, 4), new GpsPoint(1, 4) });
-        var tripPlan = TripPlan.Create(DepartureAt, route.TotalDistanceKm, averageSpeedKmh: 30, plannedDurationMinutes: null);
+        var tripPlan = TripPlan.Create(DepartureAt, route.TotalDistanceKm, averageSpeedKmh: 30, plannedDurationHours: null);
 
         var samples = RouteSampler.Sample(route, tripPlan, requestedSampleCount: 12);
 
@@ -39,7 +39,7 @@ public class RouteSamplerTests
         var start = new GpsPoint(52.0, 21.0);
         var finish = new GpsPoint(52.5, 21.7);
         var route = Route.Create(new[] { start, new GpsPoint(52.2, 21.3), finish });
-        var tripPlan = TripPlan.Create(DepartureAt, route.TotalDistanceKm, averageSpeedKmh: 20, plannedDurationMinutes: null);
+        var tripPlan = TripPlan.Create(DepartureAt, route.TotalDistanceKm, averageSpeedKmh: 20, plannedDurationHours: null);
 
         var samples = RouteSampler.Sample(route, tripPlan, requestedSampleCount: 10);
 
@@ -61,7 +61,7 @@ public class RouteSamplerTests
         var start = new GpsPoint(0, 0);
         var finish = new GpsPoint(0, 4);
         var route = Route.Create(new[] { start, finish });
-        var tripPlan = TripPlan.Create(DepartureAt, route.TotalDistanceKm, averageSpeedKmh: 50, plannedDurationMinutes: null);
+        var tripPlan = TripPlan.Create(DepartureAt, route.TotalDistanceKm, averageSpeedKmh: 50, plannedDurationHours: null);
 
         const int sampleCount = 9;
         var samples = RouteSampler.Sample(route, tripPlan, sampleCount);
@@ -83,7 +83,7 @@ public class RouteSamplerTests
         // Ustawiając AverageSpeedKmh = TotalDistanceKm, pokonanie całej trasy zajmuje
         // dokładnie 1h — niezależnie od tego, ile faktycznie wynosi TotalDistanceKm.
         var route = Route.Create(new[] { new GpsPoint(0, 0), new GpsPoint(0, 4) });
-        var tripPlan = TripPlan.Create(DepartureAt, route.TotalDistanceKm, averageSpeedKmh: route.TotalDistanceKm, plannedDurationMinutes: null);
+        var tripPlan = TripPlan.Create(DepartureAt, route.TotalDistanceKm, averageSpeedKmh: route.TotalDistanceKm, plannedDurationHours: null);
 
         var samples = RouteSampler.Sample(route, tripPlan, requestedSampleCount: RouteSampler.MinSamples);
 

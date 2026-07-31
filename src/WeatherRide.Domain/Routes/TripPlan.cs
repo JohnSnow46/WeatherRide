@@ -19,23 +19,23 @@ public sealed class TripPlan
 
     /// <summary>
     /// Tworzy <see cref="TripPlan"/> z dokładnie jednego z <paramref name="averageSpeedKmh"/>
-    /// / <paramref name="plannedDurationMinutes"/>, normalizując wynik zawsze do
+    /// / <paramref name="plannedDurationHours"/>, normalizując wynik zawsze do
     /// <see cref="AverageSpeedKmh"/>.
     /// </summary>
     /// <exception cref="TripPlanValidationException">
-    /// Gdy nie podano dokładnie jednego z pól wejściowych, <paramref name="plannedDurationMinutes"/>
+    /// Gdy nie podano dokładnie jednego z pól wejściowych, <paramref name="plannedDurationHours"/>
     /// jest <c>&lt;= 0</c>, albo wynikowe <see cref="AverageSpeedKmh"/> wychodzi <c>&lt;= 0</c>.
     /// </exception>
     public static TripPlan Create(
         DateTimeOffset departureAt,
         double totalDistanceKm,
         double? averageSpeedKmh,
-        double? plannedDurationMinutes)
+        double? plannedDurationHours)
     {
-        if (averageSpeedKmh.HasValue == plannedDurationMinutes.HasValue)
+        if (averageSpeedKmh.HasValue == plannedDurationHours.HasValue)
         {
             throw new TripPlanValidationException(
-                "Podaj dokładnie jedno z: AverageSpeedKmh albo PlannedDurationMinutes.");
+                "Podaj dokładnie jedno z: AverageSpeedKmh albo PlannedDurationHours.");
         }
 
         double resolvedSpeedKmh;
@@ -46,12 +46,12 @@ public sealed class TripPlan
         }
         else
         {
-            if (plannedDurationMinutes!.Value <= 0)
+            if (plannedDurationHours!.Value <= 0)
             {
-                throw new TripPlanValidationException("PlannedDurationMinutes musi być większe od zera.");
+                throw new TripPlanValidationException("PlannedDurationHours musi być większe od zera.");
             }
 
-            resolvedSpeedKmh = totalDistanceKm / (plannedDurationMinutes.Value / 60.0);
+            resolvedSpeedKmh = totalDistanceKm / plannedDurationHours.Value;
         }
 
         if (resolvedSpeedKmh <= 0)

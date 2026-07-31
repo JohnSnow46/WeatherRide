@@ -23,7 +23,7 @@ export class RoutePlanFormComponent {
     departureAt: ['', Validators.required],
     speedMode: ['speed'],
     averageSpeedKmh: [null as number | null],
-    plannedDurationMinutes: [null as number | null],
+    plannedDurationHours: [null as number | null],
     sampleCount: [20]
   });
 
@@ -44,7 +44,7 @@ export class RoutePlanFormComponent {
     if (value.speedMode === 'speed') {
       return this.isPositiveNumber(value.averageSpeedKmh);
     }
-    return this.isPositiveNumber(value.plannedDurationMinutes);
+    return this.isPositiveNumber(value.plannedDurationHours);
   });
 
   onFileSelected(event: Event): void {
@@ -94,13 +94,13 @@ export class RoutePlanFormComponent {
     // offset to UTC, breaking the match against Open-Meteo's forecast (`timezone=auto`, see ADR-0002).
     const departureAtIso = `${value.departureAt}:00`;
     const averageSpeedKmh = value.speedMode === 'speed' ? value.averageSpeedKmh : null;
-    const plannedDurationMinutes = value.speedMode === 'duration' ? value.plannedDurationMinutes : null;
+    const plannedDurationHours = value.speedMode === 'duration' ? value.plannedDurationHours : null;
 
     this.routePlanStateService.isLoading.set(true);
     this.routePlanStateService.error.set(null);
 
     this.routePlanApiService
-      .planRoute(file, departureAtIso, averageSpeedKmh, plannedDurationMinutes, value.sampleCount ?? 20)
+      .planRoute(file, departureAtIso, averageSpeedKmh, plannedDurationHours, value.sampleCount ?? 20)
       .subscribe({
         next: (response) => {
           this.routePlanStateService.result.set(response);

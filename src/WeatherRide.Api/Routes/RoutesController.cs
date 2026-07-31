@@ -29,7 +29,7 @@ public sealed class RoutesController : ControllerBase
                 statusCode: StatusCodes.Status400BadRequest);
         }
 
-        if (request.AverageSpeedKmh.HasValue == request.PlannedDurationMinutes.HasValue)
+        if (request.AverageSpeedKmh.HasValue == request.PlannedDurationHours.HasValue)
         {
             return Problem(
                 title: "Nieprawidłowe dane wejściowe",
@@ -43,7 +43,7 @@ public sealed class RoutesController : ControllerBase
             gpxStream,
             request.DepartureAt,
             request.AverageSpeedKmh,
-            request.PlannedDurationMinutes,
+            request.PlannedDurationHours,
             request.SampleCount,
             ct);
 

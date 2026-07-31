@@ -98,7 +98,7 @@ public class PlanRouteEndpointTests
         using var client = factory.CreateClient();
 
         using var form = BuildValidForm(sampleCount: 6);
-        form.Add(new StringContent("60"), "PlannedDurationMinutes");
+        form.Add(new StringContent("1"), "PlannedDurationHours");
 
         using var response = await client.PostAsync("/api/routes/plan", form);
 
