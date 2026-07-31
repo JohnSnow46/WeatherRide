@@ -55,10 +55,10 @@ export function interpolateWeather(samples: RouteSampleDto[], distanceKm: number
   const last = withWeather[withWeather.length - 1];
 
   if (distanceKm <= first.distanceFromStartKm) {
-    return { ...first.weather, isEstimatedBeyondForecastRange: distanceKm < first.distanceFromStartKm };
+    return pickWeather(first.weather, distanceKm < first.distanceFromStartKm);
   }
   if (distanceKm >= last.distanceFromStartKm) {
-    return { ...last.weather, isEstimatedBeyondForecastRange: distanceKm > last.distanceFromStartKm };
+    return pickWeather(last.weather, distanceKm > last.distanceFromStartKm);
   }
 
   for (let i = 1; i < withWeather.length; i++) {
@@ -76,5 +76,17 @@ export function interpolateWeather(samples: RouteSampleDto[], distanceKm: number
     }
   }
 
-  return { ...last.weather, isEstimatedBeyondForecastRange: false };
+  return pickWeather(last.weather, false);
+}
+
+function pickWeather(
+  weather: NonNullable<RouteSampleDto['weather']>,
+  isEstimatedBeyondForecastRange: boolean
+): InterpolatedWeather {
+  return {
+    temperatureCelsius: weather.temperatureCelsius,
+    windSpeedKmh: weather.windSpeedKmh,
+    precipitationMm: weather.precipitationMm,
+    isEstimatedBeyondForecastRange
+  };
 }

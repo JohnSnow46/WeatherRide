@@ -1,7 +1,34 @@
 <section class="route-map-section">
-  <h2>Route map</h2>
+  <div class="route-map-header">
+    <h2>Route map</h2>
+    @if (routePlanStateService.result()) {
+      <div class="route-map-legend">
+        <span class="legend-item">
+          <span class="legend-swatch precipitation-gradient" aria-hidden="true"></span>
+          Precipitation
+        </span>
+        <span class="legend-item">
+          <span class="legend-swatch wind-swatch" aria-hidden="true">&#8593;</span>
+          Wind
+        </span>
+      </div>
+    }
+  </div>
+
   @if (!routePlanStateService.result()) {
-    <p class="route-map-empty">Upload a GPX file to see the route map.</p>
+    <div class="route-map-empty">
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path
+          d="M9 4l6 2.5M9 4L3.5 6.2a1 1 0 0 0-.5.9V19a1 1 0 0 0 1.4.9L9 18M9 4v14M15 6.5v14M15 6.5l5.6-2.4a1 1 0 0 1 1.4.9V17a1 1 0 0 1-.6.9L15 20.5M9 18l6 2.5"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </svg>
+      <p>Upload a GPX file to see the route, colored by forecast along the way.</p>
+    </div>
   }
+
   <div #mapContainer class="route-map"></div>
 </section>

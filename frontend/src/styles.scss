@@ -1,6 +1,111 @@
 /* You can add global styles to this file, and also import other style files */
 @import 'leaflet/dist/leaflet.css';
 
+/* Design tokens. The primary blue family (--color-primary / -dark / -light) is anchored to
+   the colors already used in the Leaflet map layers below (route-map-wind-arrow border/text,
+   the precipitation gradient in route-map.component.ts) — keep these three values in sync
+   with those usages if either ever changes. --color-accent-danger mirrors the live-position
+   marker red (#ef4444) and is reserved for error/live/warning states, never decorative use. */
+:root {
+  --color-primary: #1d4ed8;
+  --color-primary-dark: #1e3a8a;
+  --color-primary-light: #93c5fd;
+  --color-accent-danger: #dc2626;
+  --color-accent-sun: #d97706;
+
+  --color-bg: #eef2f9;
+  --color-surface: #ffffff;
+  --color-surface-sunken: #f6f8fc;
+  --color-border: #e2e8f0;
+  --color-border-strong: #cbd5e1;
+  --color-text: #0f172a;
+  --color-text-muted: #64748b;
+  --color-text-faint: #94a3b8;
+
+  --font-family-base: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-family-display: 'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-family-mono: 'SFMono-Regular', ui-monospace, Consolas, 'Liberation Mono', monospace;
+
+  --radius-sm: 0.5rem;
+  --radius-md: 0.875rem;
+  --radius-lg: 1.25rem;
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+
+  --shadow-card: 0 1px 2px rgba(15, 23, 42, 0.04), 0 8px 24px -12px rgba(15, 23, 42, 0.12);
+  --shadow-card-hover: 0 2px 4px rgba(15, 23, 42, 0.05), 0 16px 32px -12px rgba(15, 23, 42, 0.16);
+  --shadow-ring: 0 0 0 3px rgba(29, 78, 216, 0.15);
+
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background:
+    radial-gradient(1100px 480px at 12% -10%, rgba(147, 197, 253, 0.28), transparent 60%),
+    radial-gradient(900px 420px at 100% 0%, rgba(217, 119, 6, 0.08), transparent 55%),
+    var(--color-bg);
+  background-attachment: fixed;
+  color: var(--color-text);
+  font-family: var(--font-family-base);
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-family-display);
+  line-height: 1.15;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin: 0 0 0.5rem;
+}
+
+h1 {
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+h2 {
+  font-size: 1.0625rem;
+}
+
+label,
+.field-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
+}
+
+::selection {
+  background: var(--color-primary-light);
+  color: var(--color-primary-dark);
+}
+
 /* Leaflet renders divIcon markers outside Angular's component tree (appended directly to
    the map's DOM via the Leaflet JS API), so Angular's emulated view encapsulation never
    applies to them. This rule must live in global styles rather than a component .scss. */
@@ -9,4 +114,16 @@
   border-radius: 50%;
   border: 2px solid white;
   box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
+}
+
+.route-map-wind-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 50%;
+  border: 1.5px solid #1d4ed8;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.4);
+  color: #1d4ed8;
+  line-height: 1;
 }

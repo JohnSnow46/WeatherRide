@@ -1,21 +1,42 @@
 @if (routePlanStateService.result(); as result) {
-  <section class="route-plan-result">
-    <h2>Route plan</h2>
-    <p class="total-distance">Total distance: {{ result.totalDistanceKm.toFixed(1) }} km</p>
+  <section class="route-plan-result card">
+    <div class="result-header">
+      <h2>Weather along the route</h2>
+      <div class="result-stats">
+        <span class="stat"><strong class="tabular-nums">{{ result.totalDistanceKm.toFixed(1) }}</strong> km</span>
+        <span class="stat"><strong class="tabular-nums">{{ result.samples.length }}</strong> points</span>
+      </div>
+    </div>
+
+    <div class="sample-row sample-row-head" aria-hidden="true">
+      <span>Distance</span>
+      <span>Forecast</span>
+      <span>Wind</span>
+      <span>Precip.</span>
+      <span>ETA</span>
+    </div>
 
     <ul class="samples">
       @for (sample of result.samples; track sample.distanceFromStartKm) {
-        <li class="sample">
-          <span class="distance">{{ sample.distanceFromStartKm.toFixed(1) }} km</span>
-          <span class="eta">ETA: {{ formatEta(sample.etaAt) }}</span>
+        <li class="sample-row" [class.is-active]="sample.distanceFromStartKm === activeSampleDistanceKm()">
+          <span class="distance tabular-nums">{{ sample.distanceFromStartKm.toFixed(1) }} km</span>
+
           @if (sample.weather; as weather) {
-            <span class="weather">
-              {{ weather.temperatureCelsius }}&deg;C, wind {{ weather.windSpeedKmh }} km/h, precipitation
-              {{ weather.precipitationMm }} mm
+            <span class="forecast">
+              <app-weather-glyph class="sample-icon" [kind]="iconKind(weather)" />
+              <span class="temp tabular-nums">{{ weather.temperatureCelsius.toFixed(1) }}&deg;C</span>
             </span>
           } @else {
-            <span class="weather no-forecast">No forecast available</span>
+            <span class="no-forecast">No forecast available</span>
           }
+
+          <div class="meta">
+            @if (sample.weather; as weather) {
+              <span class="wind-cell detail tabular-nums">{{ weather.windSpeedKmh.toFixed(1) }} km/h</span>
+              <span class="precip-cell detail tabular-nums">{{ weather.precipitationMm.toFixed(1) }} mm</span>
+            }
+            <span class="eta tabular-nums">{{ formatEta(sample.etaAt) }}</span>
+          </div>
         </li>
       }
     </ul>

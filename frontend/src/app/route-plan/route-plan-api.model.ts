@@ -2,6 +2,7 @@ export interface WeatherForecastDto {
   temperatureCelsius: number;
   windSpeedKmh: number;
   precipitationMm: number;
+  windDirectionDegrees: number;
 }
 
 export interface RouteSampleDto {

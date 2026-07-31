@@ -17,6 +17,7 @@ export class RoutePlanFormComponent {
   protected readonly routePlanStateService = inject(RoutePlanStateService);
 
   readonly selectedFile = signal<File | null>(null);
+  readonly isDragging = signal(false);
 
   readonly form = this.fb.group({
     departureAt: ['', Validators.required],
@@ -30,6 +31,7 @@ export class RoutePlanFormComponent {
 
   readonly speedMode = computed(() => this.formValue().speedMode ?? 'speed');
   readonly sampleCount = computed(() => this.formValue().sampleCount ?? 20);
+  readonly sampleCountPercent = computed(() => ((this.sampleCount() - 5) / (50 - 5)) * 100);
 
   readonly canSubmit = computed(() => {
     const value = this.formValue();
@@ -50,6 +52,30 @@ export class RoutePlanFormComponent {
     this.selectedFile.set(input.files?.[0] ?? null);
   }
 
+  onDragOver(event: DragEvent): void {
+    event.preventDefault();
+    this.isDragging.set(true);
+  }
+
+  onDragLeave(event: DragEvent): void {
+    event.preventDefault();
+    this.isDragging.set(false);
+  }
+
+  onDrop(event: DragEvent): void {
+    event.preventDefault();
+    this.isDragging.set(false);
+    const file = event.dataTransfer?.files?.[0] ?? null;
+    if (file) {
+      this.selectedFile.set(file);
+    }
+  }
+
+  clearFile(event: Event): void {
+    event.preventDefault();
+    this.selectedFile.set(null);
+  }
+
   onSubmit(): void {
     if (!this.canSubmit()) {
       return;
@@ -61,7 +87,12 @@ export class RoutePlanFormComponent {
     }
 
     const value = this.form.getRawValue();
-    const departureAtIso = new Date(value.departureAt ?? '').toISOString();
+    // DepartureAt is intentionally LOCAL time for the route's start coordinates (ADR-0001),
+    // not UTC. `datetime-local` gives raw clock digits ("YYYY-MM-DDTHH:mm") with no timezone
+    // offset — we only append seconds. Do NOT use `new Date(...).toISOString()`: that
+    // interprets the entered time as the BROWSER's local time and shifts it by the browser's
+    // offset to UTC, breaking the match against Open-Meteo's forecast (`timezone=auto`, see ADR-0002).
+    const departureAtIso = `${value.departureAt}:00`;
     const averageSpeedKmh = value.speedMode === 'speed' ? value.averageSpeedKmh : null;
     const plannedDurationMinutes = value.speedMode === 'duration' ? value.plannedDurationMinutes : null;
 

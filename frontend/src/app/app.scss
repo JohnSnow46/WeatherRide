@@ -1,0 +1,91 @@
+.shell {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: var(--space-6) var(--space-5) var(--space-7);
+}
+
+.masthead {
+  margin-bottom: var(--space-6);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.brand-mark {
+  width: 2.75rem;
+  height: 2.75rem;
+  flex-shrink: 0;
+}
+
+.brand-text h1 {
+  margin: 0;
+  font-size: 1.75rem;
+}
+
+.tagline {
+  margin: 0.15rem 0 0;
+  color: var(--color-text-muted);
+  font-size: 0.9375rem;
+}
+
+.page {
+  display: grid;
+  grid-template-columns: minmax(280px, 340px) 1fr;
+  align-items: start;
+  gap: var(--space-5);
+}
+
+.page-sidebar {
+  position: sticky;
+  top: var(--space-5);
+}
+
+.page-main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  min-width: 0;
+}
+
+/* Angular custom elements default to display:inline; make each top-level feature block a
+   flex item so the surrounding gap creates consistent spacing between form/map/slider/result. */
+app-route-plan-form,
+app-route-map,
+app-route-slider,
+app-route-plan-result {
+  display: block;
+}
+
+/* route-map and route-slider are styled as one visually continuous card (map on top,
+   scrubber flush below) — cancel the flex gap between just these two siblings. */
+app-route-slider {
+  margin-top: calc(-1 * var(--space-5));
+}
+
+@media (max-width: 900px) {
+  .page {
+    grid-template-columns: 1fr;
+  }
+
+  .page-sidebar {
+    position: static;
+  }
+}
+
+@media (max-width: 640px) {
+  .shell {
+    padding: var(--space-5) var(--space-4) var(--space-6);
+  }
+
+  .brand-mark {
+    width: 2.25rem;
+    height: 2.25rem;
+  }
+
+  .brand-text h1 {
+    font-size: 1.4rem;
+  }
+}

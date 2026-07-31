@@ -1,29 +1,37 @@
 @if (routePlanStateService.result(); as result) {
-  <section class="route-slider">
-    <label for="route-distance">
-      Position: {{ routePlanStateService.selectedDistanceKm().toFixed(1) }} km /
-      {{ result.totalDistanceKm.toFixed(1) }} km
+  <section class="route-slider" [style.--progress.%]="progressPercent()">
+    <div class="scrub-readout">
+      @if (weatherAtSelection(); as weather) {
+        <app-weather-glyph class="weather-icon" [kind]="iconKind()!" />
+        <div class="reading">
+          <span class="temp tabular-nums">{{ weather.temperatureCelsius.toFixed(1) }}&deg;C</span>
+          <span class="details tabular-nums">
+            wind {{ weather.windSpeedKmh.toFixed(1) }} km/h · precipitation {{ weather.precipitationMm.toFixed(1) }} mm
+          </span>
+        </div>
+        @if (weather.isEstimatedBeyondForecastRange) {
+          <span class="estimated-label">Estimated</span>
+        }
+      } @else {
+        <span class="reading no-forecast">No forecast available anywhere on this route</span>
+      }
+    </div>
+
+    <label class="scrub-label" for="route-distance">
+      Ride position
+      <span class="scrub-value tabular-nums">
+        {{ routePlanStateService.selectedDistanceKm().toFixed(1) }} / {{ result.totalDistanceKm.toFixed(1) }} km
+      </span>
     </label>
     <input
       id="route-distance"
+      class="scrub-input"
       type="range"
       min="0"
       [max]="result.totalDistanceKm"
       [step]="sliderStepKm()"
       [value]="routePlanStateService.selectedDistanceKm()"
-      (input)="onDistanceInput($event)" />
-
-    @if (weatherAtSelection(); as weather) {
-      <p class="weather-at-selection">
-        {{ weather.temperatureCelsius.toFixed(1) }}&deg;C, wind
-        {{ weather.windSpeedKmh.toFixed(1) }} km/h, precipitation
-        {{ weather.precipitationMm.toFixed(1) }} mm
-        @if (weather.isEstimatedBeyondForecastRange) {
-          <span class="estimated-label">Estimated — beyond forecast range</span>
-        }
-      </p>
-    } @else {
-      <p class="weather-at-selection no-forecast">No forecast available anywhere on this route</p>
-    }
+      (input)="onDistanceInput($event)"
+    />
   </section>
 }

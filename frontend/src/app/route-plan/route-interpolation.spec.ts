@@ -47,8 +47,8 @@ describe('interpolateWeather', () => {
 
   it('interpolateWeather_DistanceExactlyOnSampleWithWeather_ReturnsItsValuesNotEstimated', () => {
     const samples: RouteSampleDto[] = [
-      sample(0, { temperatureCelsius: 10, windSpeedKmh: 5, precipitationMm: 0 }),
-      sample(10, { temperatureCelsius: 20, windSpeedKmh: 15, precipitationMm: 2 })
+      sample(0, { temperatureCelsius: 10, windSpeedKmh: 5, precipitationMm: 0, windDirectionDegrees: 90 }),
+      sample(10, { temperatureCelsius: 20, windSpeedKmh: 15, precipitationMm: 2, windDirectionDegrees: 180 })
     ];
 
     const result = interpolateWeather(samples, 10);
@@ -63,9 +63,9 @@ describe('interpolateWeather', () => {
 
   it('interpolateWeather_MiddleSampleIsNull_SkipsNullAndInterpolatesBetweenNearestWithWeather', () => {
     const samples: RouteSampleDto[] = [
-      sample(0, { temperatureCelsius: 10, windSpeedKmh: 10, precipitationMm: 0 }),
+      sample(0, { temperatureCelsius: 10, windSpeedKmh: 10, precipitationMm: 0, windDirectionDegrees: 45 }),
       sample(5, null),
-      sample(10, { temperatureCelsius: 20, windSpeedKmh: 20, precipitationMm: 4 })
+      sample(10, { temperatureCelsius: 20, windSpeedKmh: 20, precipitationMm: 4, windDirectionDegrees: 225 })
     ];
 
     const result = interpolateWeather(samples, 5);
@@ -78,8 +78,8 @@ describe('interpolateWeather', () => {
 
   it('interpolateWeather_DistanceBeyondLastSampleWithWeather_ReturnsItsValuesEstimated', () => {
     const samples: RouteSampleDto[] = [
-      sample(0, { temperatureCelsius: 10, windSpeedKmh: 10, precipitationMm: 0 }),
-      sample(10, { temperatureCelsius: 20, windSpeedKmh: 20, precipitationMm: 4 })
+      sample(0, { temperatureCelsius: 10, windSpeedKmh: 10, precipitationMm: 0, windDirectionDegrees: 45 }),
+      sample(10, { temperatureCelsius: 20, windSpeedKmh: 20, precipitationMm: 4, windDirectionDegrees: 270 })
     ];
 
     const result = interpolateWeather(samples, 15);

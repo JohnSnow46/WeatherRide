@@ -1,33 +1,202 @@
 .route-plan-result {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  max-width: 28rem;
+  animation: fadeInUp 0.3s ease-out;
 }
 
-.total-distance {
-  font-weight: 600;
+.route-plan-result.card {
+  padding: var(--space-5);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+
+.result-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  margin-bottom: var(--space-4);
+}
+
+.result-header h2 {
+  margin: 0;
+}
+
+.result-stats {
+  display: flex;
+  gap: var(--space-4);
+}
+
+.stat {
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+}
+
+.stat strong {
+  color: var(--color-text);
+  font-weight: 700;
 }
 
 .samples {
   list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
   margin: 0;
   padding: 0;
+  overflow-x: auto;
 }
 
-.sample {
+.sample-row {
+  display: grid;
+  grid-template-columns: 4.5rem 6.5rem 5rem 5rem 1fr;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 30rem;
+  padding: 0.65rem var(--space-2);
+  border-radius: 0.5rem;
+  transition: background-color 0.15s ease;
+}
+
+.sample-row-head {
+  padding-top: 0;
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.25rem;
+  border-bottom: 1px solid var(--color-border);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-text-faint);
+}
+
+.sample-row-head span:last-child {
+  text-align: right;
+}
+
+.samples li.sample-row:hover {
+  background: var(--color-surface-sunken);
+}
+
+.samples li.sample-row.is-active {
+  background: color-mix(in srgb, var(--color-primary) 8%, transparent);
+  box-shadow: inset 2px 0 0 var(--color-primary);
+}
+
+.distance {
+  font-weight: 700;
+  font-size: 0.875rem;
+}
+
+.forecast {
   display: flex;
-  flex-direction: column;
-  gap: 0.15rem;
-  padding: 0.5rem;
-  border: 1px solid #ddd;
-  border-radius: 0.25rem;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+/* On desktop .meta is a transparent wrapper so wind/precip/ETA still land in their own
+   grid columns; on mobile (below) it becomes a real flex row instead. */
+.meta {
+  display: contents;
+}
+
+.wind-cell {
+  grid-column: 3;
+}
+
+.precip-cell {
+  grid-column: 4;
+}
+
+.sample-icon {
+  width: 1.375rem;
+  height: 1.375rem;
+  flex-shrink: 0;
+}
+
+.temp {
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.detail {
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+}
+
+.eta {
+  grid-column: 5;
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+  text-align: right;
 }
 
 .no-forecast {
-  color: #666;
+  grid-column: 2 / span 3;
+  font-size: 0.8125rem;
   font-style: italic;
+  color: var(--color-text-faint);
+}
+
+@media (max-width: 640px) {
+  .sample-row.sample-row-head {
+    display: none;
+  }
+
+  .samples {
+    overflow-x: visible;
+  }
+
+  .sample-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    column-gap: 0.6rem;
+    min-width: 0;
+    padding: 0.7rem var(--space-2);
+    border-radius: 0;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .samples li.sample-row:last-child {
+    border-bottom: none;
+  }
+
+  .samples li.sample-row.is-active {
+    box-shadow: inset 3px 0 0 var(--color-primary);
+  }
+
+  .distance {
+    order: 1;
+  }
+
+  .forecast,
+  .no-forecast {
+    order: 2;
+    margin-left: auto;
+  }
+
+  .meta {
+    display: flex;
+    order: 3;
+    flex-basis: 100%;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-top: 0.35rem;
+    padding-top: 0.35rem;
+    border-top: 1px dashed var(--color-border);
+  }
+
+  .eta {
+    text-align: left;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

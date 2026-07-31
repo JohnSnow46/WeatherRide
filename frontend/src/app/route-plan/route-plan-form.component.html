@@ -1,7 +1,50 @@
-<form class="route-plan-form" [formGroup]="form" (ngSubmit)="onSubmit()">
+<form
+  class="route-plan-form"
+  [class.is-loading]="routePlanStateService.isLoading()"
+  [formGroup]="form"
+  (ngSubmit)="onSubmit()"
+>
+  <h2 class="form-title">Plan your ride</h2>
+
   <div class="field">
-    <label for="gpxFile">GPX file</label>
-    <input id="gpxFile" type="file" accept=".gpx" (change)="onFileSelected($event)" />
+    <span class="field-label">GPX file</span>
+    <label
+      for="gpxFile"
+      class="dropzone"
+      [class.is-dragging]="isDragging()"
+      [class.has-file]="selectedFile()"
+      (dragover)="onDragOver($event)"
+      (dragleave)="onDragLeave($event)"
+      (drop)="onDrop($event)"
+    >
+      <input id="gpxFile" type="file" accept=".gpx" class="dropzone-input" (change)="onFileSelected($event)" />
+
+      @if (selectedFile(); as file) {
+        <svg class="dropzone-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path
+            d="M6 3.5h8l4.5 4.5V20a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4.5a1 1 0 0 1 1-1z"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linejoin="round"
+          />
+          <path d="M9.5 12.5l2 2 3.5-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        <span class="dropzone-filename">{{ file.name }}</span>
+        <button type="button" class="dropzone-clear" (click)="clearFile($event)">Remove</button>
+      } @else {
+        <svg class="dropzone-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path
+            d="M12 15.5V4.5M12 4.5L7.5 9M12 4.5L16.5 9"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+          <path d="M4.5 15.5V18a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+        </svg>
+        <span class="dropzone-text"><strong>Click to upload</strong> or drag and drop a .gpx file</span>
+      }
+    </label>
   </div>
 
   <div class="field">
@@ -11,14 +54,16 @@
 
   <div class="field">
     <span class="field-label">Pace input</span>
-    <label class="radio-option">
-      <input type="radio" formControlName="speedMode" value="speed" />
-      Average speed
-    </label>
-    <label class="radio-option">
-      <input type="radio" formControlName="speedMode" value="duration" />
-      Planned duration
-    </label>
+    <div class="segmented" role="radiogroup" aria-label="Pace input">
+      <label class="segmented-option" [class.is-active]="speedMode() === 'speed'">
+        <input type="radio" formControlName="speedMode" value="speed" />
+        Average speed
+      </label>
+      <label class="segmented-option" [class.is-active]="speedMode() === 'duration'">
+        <input type="radio" formControlName="speedMode" value="duration" />
+        Planned duration
+      </label>
+    </div>
   </div>
 
   @if (speedMode() === 'speed') {
@@ -36,17 +81,29 @@
   }
 
   <div class="field">
-    <label for="sampleCount">Sample density: {{ sampleCount() }} points</label>
-    <input id="sampleCount" type="range" min="5" max="50" formControlName="sampleCount" />
+    <label for="sampleCount">
+      Sample density
+      <span class="value-badge tabular-nums">{{ sampleCount() }} points</span>
+    </label>
+    <input
+      id="sampleCount"
+      type="range"
+      min="5"
+      max="50"
+      formControlName="sampleCount"
+      class="density-slider"
+      [style.--progress.%]="sampleCountPercent()"
+    />
   </div>
 
-  <button type="submit" [disabled]="!canSubmit() || routePlanStateService.isLoading()">
-    Plan route
+  <button type="submit" class="submit-btn" [disabled]="!canSubmit() || routePlanStateService.isLoading()">
+    @if (routePlanStateService.isLoading()) {
+      <span class="spinner" aria-hidden="true"></span>
+      Planning your route…
+    } @else {
+      Plan route
+    }
   </button>
-
-  @if (routePlanStateService.isLoading()) {
-    <p class="status">Planning your route…</p>
-  }
 
   @if (routePlanStateService.error(); as errorMessage) {
     <p class="status error">{{ errorMessage }}</p>
