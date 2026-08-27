@@ -50,6 +50,7 @@ public sealed class OpenMeteoWeatherClient : IWeatherClient
             ("hourly", "temperature_2m,wind_speed_10m,wind_direction_10m,precipitation"),
             ("wind_speed_unit", "kmh"),
             ("timezone", "auto"),
+            ("forecast_days", "16"),
         };
 
         var queryString = string.Join('&', query.Select(kv => $"{kv.Key}={Uri.EscapeDataString(kv.Value)}"));

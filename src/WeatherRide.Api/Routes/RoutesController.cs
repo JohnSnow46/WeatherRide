@@ -7,11 +7,16 @@ namespace WeatherRide.Api.Routes;
 [Route("api/routes")]
 public sealed class RoutesController : ControllerBase
 {
-    private readonly PlanTripUseCase _planTripUseCase;
+    private const string InvalidInputTitle = "Nieprawidłowe dane wejściowe";
+    private const string SpeedXorDurationDetail = "Podaj albo średnią prędkość, albo czas trasy, nie oba.";
 
-    public RoutesController(PlanTripUseCase planTripUseCase)
+    private readonly PlanTripUseCase _planTripUseCase;
+    private readonly PlanDirectTripUseCase _planDirectTripUseCase;
+
+    public RoutesController(PlanTripUseCase planTripUseCase, PlanDirectTripUseCase planDirectTripUseCase)
     {
         _planTripUseCase = planTripUseCase;
+        _planDirectTripUseCase = planDirectTripUseCase;
     }
 
     /// <summary>
@@ -24,7 +29,7 @@ public sealed class RoutesController : ControllerBase
         if (request.GpxFile is null || request.GpxFile.Length == 0)
         {
             return Problem(
-                title: "Nieprawidłowe dane wejściowe",
+                title: InvalidInputTitle,
                 detail: "Plik GPX jest wymagany.",
                 statusCode: StatusCodes.Status400BadRequest);
         }
@@ -32,8 +37,8 @@ public sealed class RoutesController : ControllerBase
         if (request.AverageSpeedKmh.HasValue == request.PlannedDurationHours.HasValue)
         {
             return Problem(
-                title: "Nieprawidłowe dane wejściowe",
-                detail: "Podaj albo średnią prędkość, albo czas trasy, nie oba.",
+                title: InvalidInputTitle,
+                detail: SpeedXorDurationDetail,
                 statusCode: StatusCodes.Status400BadRequest);
         }
 
@@ -47,11 +52,51 @@ public sealed class RoutesController : ControllerBase
             request.SampleCount,
             ct);
 
+        return Ok(ToResponse(result));
+    }
+
+    /// <summary>
+    /// Przyjmuje parę punktów A-B (bez pliku GPX) + parametry wyjazdu i zwraca próbkowane
+    /// punkty trasy z ETA i prognozą pogody z Open-Meteo.
+    /// </summary>
+    [HttpPost("plan-direct")]
+    public async Task<ActionResult<PlanRouteResponse>> PlanDirect([FromBody] PlanDirectRouteRequest request, CancellationToken ct)
+    {
+        if (request.PointA is null || request.PointB is null)
+        {
+            return Problem(
+                title: InvalidInputTitle,
+                detail: "Punkty A i B są wymagane.",
+                statusCode: StatusCodes.Status400BadRequest);
+        }
+
+        if (request.AverageSpeedKmh.HasValue == request.PlannedDurationHours.HasValue)
+        {
+            return Problem(
+                title: InvalidInputTitle,
+                detail: SpeedXorDurationDetail,
+                statusCode: StatusCodes.Status400BadRequest);
+        }
+
+        var result = await _planDirectTripUseCase.PlanAsync(
+            request.PointA.Value,
+            request.PointB.Value,
+            request.DepartureAt,
+            request.AverageSpeedKmh,
+            request.PlannedDurationHours,
+            request.SampleCount,
+            ct);
+
+        return Ok(ToResponse(result));
+    }
+
+    private static PlanRouteResponse ToResponse(TripPlanResult result)
+    {
         var track = result.Route.Points
             .Select((point, i) => new TrackPointResponse(point.Latitude, point.Longitude, result.Route.CumulativeDistancesKm[i]))
             .ToList();
 
-        var response = new PlanRouteResponse(
+        return new PlanRouteResponse(
             result.Route.TotalDistanceKm,
             result.Samples
                 .Select(x => new RouteSampleResponse(
@@ -68,7 +113,5 @@ public sealed class RoutesController : ControllerBase
                             x.Weather.WindDirectionDegrees)))
                 .ToList(),
             track);
-
-        return Ok(response);
     }
 }

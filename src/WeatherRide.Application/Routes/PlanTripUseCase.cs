@@ -29,12 +29,7 @@ public sealed class PlanTripUseCase
     {
         var route = await _gpxParser.ParseAsync(gpxContent, cancellationToken);
 
-        var tripPlan = TripPlan.Create(departureAt, route.TotalDistanceKm, averageSpeedKmh, plannedDurationHours);
-
-        var samples = RouteSampler.Sample(route, tripPlan, sampleCount ?? RouteSampler.MaxSamples);
-
-        var forecasts = await _weatherClient.GetForecastsAsync(samples, cancellationToken);
-
-        return new TripPlanResult(route, samples.Select((sample, i) => new RouteSampleWeather(sample, forecasts[i])).ToList());
+        return await RouteWeatherPlanner.PlanAsync(
+            _weatherClient, route, departureAt, averageSpeedKmh, plannedDurationHours, sampleCount, cancellationToken);
     }
 }
