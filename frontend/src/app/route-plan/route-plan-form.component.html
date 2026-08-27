@@ -7,45 +7,111 @@
   <h2 class="form-title">Plan your ride</h2>
 
   <div class="field">
-    <span class="field-label">GPX file</span>
-    <label
-      for="gpxFile"
-      class="dropzone"
-      [class.is-dragging]="isDragging()"
-      [class.has-file]="selectedFile()"
-      (dragover)="onDragOver($event)"
-      (dragleave)="onDragLeave($event)"
-      (drop)="onDrop($event)"
-    >
-      <input id="gpxFile" type="file" accept=".gpx" class="dropzone-input" (change)="onFileSelected($event)" />
-
-      @if (selectedFile(); as file) {
-        <svg class="dropzone-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path
-            d="M6 3.5h8l4.5 4.5V20a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4.5a1 1 0 0 1 1-1z"
-            stroke="currentColor"
-            stroke-width="1.5"
-            stroke-linejoin="round"
-          />
-          <path d="M9.5 12.5l2 2 3.5-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-        </svg>
-        <span class="dropzone-filename">{{ file.name }}</span>
-        <button type="button" class="dropzone-clear" (click)="clearFile($event)">Remove</button>
-      } @else {
-        <svg class="dropzone-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path
-            d="M12 15.5V4.5M12 4.5L7.5 9M12 4.5L16.5 9"
-            stroke="currentColor"
-            stroke-width="1.5"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          />
-          <path d="M4.5 15.5V18a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
-        </svg>
-        <span class="dropzone-text"><strong>Click to upload</strong> or drag and drop a .gpx file</span>
-      }
-    </label>
+    <span class="field-label">Route input</span>
+    <div class="segmented" role="radiogroup" aria-label="Route input">
+      <label class="segmented-option" [class.is-active]="routeMode() === 'gpx'">
+        <input type="radio" formControlName="routeMode" value="gpx" />
+        GPX file
+      </label>
+      <label class="segmented-option" [class.is-active]="routeMode() === 'direct'">
+        <input type="radio" formControlName="routeMode" value="direct" />
+        Point A → Point B
+      </label>
+    </div>
   </div>
+
+  @if (routeMode() === 'direct') {
+    <div class="field">
+      <span class="field-label">Point A</span>
+      <div class="point-inputs">
+        <input
+          type="number"
+          step="any"
+          min="-90"
+          max="90"
+          placeholder="Latitude"
+          formControlName="pointALatitude"
+          aria-label="Point A latitude"
+        />
+        <input
+          type="number"
+          step="any"
+          min="-180"
+          max="180"
+          placeholder="Longitude"
+          formControlName="pointALongitude"
+          aria-label="Point A longitude"
+        />
+      </div>
+    </div>
+
+    <div class="field">
+      <span class="field-label">Point B</span>
+      <div class="point-inputs">
+        <input
+          type="number"
+          step="any"
+          min="-90"
+          max="90"
+          placeholder="Latitude"
+          formControlName="pointBLatitude"
+          aria-label="Point B latitude"
+        />
+        <input
+          type="number"
+          step="any"
+          min="-180"
+          max="180"
+          placeholder="Longitude"
+          formControlName="pointBLongitude"
+          aria-label="Point B longitude"
+        />
+      </div>
+    </div>
+  }
+
+  @if (routeMode() === 'gpx') {
+    <div class="field">
+      <span class="field-label">GPX file</span>
+      <label
+        for="gpxFile"
+        class="dropzone"
+        [class.is-dragging]="isDragging()"
+        [class.has-file]="selectedFile()"
+        (dragover)="onDragOver($event)"
+        (dragleave)="onDragLeave($event)"
+        (drop)="onDrop($event)"
+      >
+        <input id="gpxFile" type="file" accept=".gpx" class="dropzone-input" (change)="onFileSelected($event)" />
+
+        @if (selectedFile(); as file) {
+          <svg class="dropzone-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path
+              d="M6 3.5h8l4.5 4.5V20a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4.5a1 1 0 0 1 1-1z"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linejoin="round"
+            />
+            <path d="M9.5 12.5l2 2 3.5-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+          <span class="dropzone-filename">{{ file.name }}</span>
+          <button type="button" class="dropzone-clear" (click)="clearFile($event)">Remove</button>
+        } @else {
+          <svg class="dropzone-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path
+              d="M12 15.5V4.5M12 4.5L7.5 9M12 4.5L16.5 9"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <path d="M4.5 15.5V18a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+          </svg>
+          <span class="dropzone-text"><strong>Click to upload</strong> or drag and drop a .gpx file</span>
+        }
+      </label>
+    </div>
+  }
 
   <div class="field">
     <label for="departureAt">Departure time</label>

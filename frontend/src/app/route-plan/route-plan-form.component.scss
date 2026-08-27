@@ -113,6 +113,14 @@
   border-color: var(--color-accent-danger);
 }
 
+/* --- Point A/B inputs --- */
+
+.point-inputs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+
 /* --- Inputs --- */
 
 input[type='text'],

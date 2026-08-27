@@ -20,31 +20,48 @@ export class RoutePlanFormComponent {
   readonly isDragging = signal(false);
 
   readonly form = this.fb.group({
+    routeMode: ['gpx' as 'gpx' | 'direct'],
     departureAt: ['', Validators.required],
     speedMode: ['speed'],
     averageSpeedKmh: [null as number | null],
     plannedDurationHours: [null as number | null],
-    sampleCount: [20]
+    sampleCount: [20],
+    pointALatitude: [null as number | null, [Validators.min(-90), Validators.max(90)]],
+    pointALongitude: [null as number | null, [Validators.min(-180), Validators.max(180)]],
+    pointBLatitude: [null as number | null, [Validators.min(-90), Validators.max(90)]],
+    pointBLongitude: [null as number | null, [Validators.min(-180), Validators.max(180)]]
   });
 
   private readonly formValue = toSignal(this.form.valueChanges, { initialValue: this.form.value });
 
+  readonly routeMode = computed(() => this.formValue().routeMode ?? 'gpx');
   readonly speedMode = computed(() => this.formValue().speedMode ?? 'speed');
   readonly sampleCount = computed(() => this.formValue().sampleCount ?? 20);
   readonly sampleCountPercent = computed(() => ((this.sampleCount() - 5) / (50 - 5)) * 100);
 
   readonly canSubmit = computed(() => {
     const value = this.formValue();
-    if (!this.selectedFile()) {
-      return false;
-    }
     if (!value.departureAt) {
       return false;
     }
     if (value.speedMode === 'speed') {
-      return this.isPositiveNumber(value.averageSpeedKmh);
+      if (!this.isPositiveNumber(value.averageSpeedKmh)) {
+        return false;
+      }
+    } else if (!this.isPositiveNumber(value.plannedDurationHours)) {
+      return false;
     }
-    return this.isPositiveNumber(value.plannedDurationHours);
+
+    if (value.routeMode === 'direct') {
+      return (
+        this.isValidLatitude(value.pointALatitude) &&
+        this.isValidLongitude(value.pointALongitude) &&
+        this.isValidLatitude(value.pointBLatitude) &&
+        this.isValidLongitude(value.pointBLongitude)
+      );
+    }
+
+    return !!this.selectedFile();
   });
 
   onFileSelected(event: Event): void {
@@ -81,11 +98,6 @@ export class RoutePlanFormComponent {
       return;
     }
 
-    const file = this.selectedFile();
-    if (!file) {
-      return;
-    }
-
     const value = this.form.getRawValue();
     // DepartureAt is intentionally LOCAL time for the route's start coordinates (ADR-0001),
     // not UTC. `datetime-local` gives raw clock digits ("YYYY-MM-DDTHH:mm") with no timezone
@@ -95,27 +107,46 @@ export class RoutePlanFormComponent {
     const departureAtIso = `${value.departureAt}:00`;
     const averageSpeedKmh = value.speedMode === 'speed' ? value.averageSpeedKmh : null;
     const plannedDurationHours = value.speedMode === 'duration' ? value.plannedDurationHours : null;
+    const sampleCount = value.sampleCount ?? 20;
 
     this.routePlanStateService.isLoading.set(true);
     this.routePlanStateService.error.set(null);
 
-    this.routePlanApiService
-      .planRoute(file, departureAtIso, averageSpeedKmh, plannedDurationHours, value.sampleCount ?? 20)
-      .subscribe({
-        next: (response) => {
-          this.routePlanStateService.result.set(response);
-          this.routePlanStateService.selectedDistanceKm.set(0);
-          this.routePlanStateService.isLoading.set(false);
-        },
-        error: (err) => {
-          const message = err?.error?.detail ?? 'Something went wrong while planning the route. Please try again.';
-          this.routePlanStateService.error.set(message);
-          this.routePlanStateService.isLoading.set(false);
-        }
-      });
+    const request$ =
+      value.routeMode === 'direct'
+        ? this.routePlanApiService.planDirectRoute(
+            { latitude: value.pointALatitude!, longitude: value.pointALongitude! },
+            { latitude: value.pointBLatitude!, longitude: value.pointBLongitude! },
+            departureAtIso,
+            averageSpeedKmh,
+            plannedDurationHours,
+            sampleCount
+          )
+        : this.routePlanApiService.planRoute(this.selectedFile()!, departureAtIso, averageSpeedKmh, plannedDurationHours, sampleCount);
+
+    request$.subscribe({
+      next: (response) => {
+        this.routePlanStateService.result.set(response);
+        this.routePlanStateService.selectedDistanceKm.set(0);
+        this.routePlanStateService.isLoading.set(false);
+      },
+      error: (err) => {
+        const message = err?.error?.detail ?? 'Something went wrong while planning the route. Please try again.';
+        this.routePlanStateService.error.set(message);
+        this.routePlanStateService.isLoading.set(false);
+      }
+    });
   }
 
   private isPositiveNumber(value: number | null | undefined): boolean {
     return typeof value === 'number' && !Number.isNaN(value) && value > 0;
+  }
+
+  private isValidLatitude(value: number | null | undefined): boolean {
+    return typeof value === 'number' && !Number.isNaN(value) && value >= -90 && value <= 90;
+  }
+
+  private isValidLongitude(value: number | null | undefined): boolean {
+    return typeof value === 'number' && !Number.isNaN(value) && value >= -180 && value <= 180;
   }
 }

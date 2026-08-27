@@ -2,11 +2,31 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
-import { PlanRouteResponse } from './route-plan-api.model';
+import { GpsPointDto, PlanDirectRouteRequestDto, PlanRouteResponse } from './route-plan-api.model';
 
 @Injectable({ providedIn: 'root' })
 export class RoutePlanApiService {
   constructor(private readonly http: HttpClient) {}
+
+  planDirectRoute(
+    pointA: GpsPointDto,
+    pointB: GpsPointDto,
+    departureAtIso: string,
+    averageSpeedKmh: number | null,
+    plannedDurationHours: number | null,
+    sampleCount: number
+  ): Observable<PlanRouteResponse> {
+    const body: PlanDirectRouteRequestDto = {
+      pointA,
+      pointB,
+      departureAt: departureAtIso,
+      averageSpeedKmh,
+      plannedDurationHours,
+      sampleCount
+    };
+
+    return this.http.post<PlanRouteResponse>('/api/routes/plan-direct', body);
+  }
 
   planRoute(
     gpxFile: File,

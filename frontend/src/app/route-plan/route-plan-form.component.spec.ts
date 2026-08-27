@@ -48,4 +48,54 @@ describe('RoutePlanFormComponent', () => {
       20
     );
   });
+
+  it('switches to direct point A/B mode and disables submit until both points are valid', () => {
+    const fixture = TestBed.createComponent(RoutePlanFormComponent);
+    fixture.componentInstance.form.patchValue({
+      routeMode: 'direct',
+      departureAt: '2026-08-01T10:00',
+      averageSpeedKmh: 20
+    });
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.canSubmit()).toBeFalse();
+
+    fixture.componentInstance.form.patchValue({
+      pointALatitude: 52.0,
+      pointALongitude: 21.0,
+      pointBLatitude: 52.5,
+      pointBLongitude: 21.5
+    });
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.canSubmit()).toBeTrue();
+  });
+
+  it('submits direct point A/B mode by calling planDirectRoute with the entered coordinates', () => {
+    const fixture = TestBed.createComponent(RoutePlanFormComponent);
+    const apiService = TestBed.inject(RoutePlanApiService);
+    const planDirectRouteSpy = spyOn(apiService, 'planDirectRoute').and.returnValue(of({} as PlanRouteResponse));
+
+    fixture.componentInstance.form.patchValue({
+      routeMode: 'direct',
+      departureAt: '2026-08-01T10:00',
+      averageSpeedKmh: 20,
+      pointALatitude: 52.0,
+      pointALongitude: 21.0,
+      pointBLatitude: 52.5,
+      pointBLongitude: 21.5
+    });
+    fixture.detectChanges();
+
+    fixture.componentInstance.onSubmit();
+
+    expect(planDirectRouteSpy).toHaveBeenCalledWith(
+      { latitude: 52.0, longitude: 21.0 },
+      { latitude: 52.5, longitude: 21.5 },
+      '2026-08-01T10:00:00',
+      20,
+      null,
+      20
+    );
+  });
 });

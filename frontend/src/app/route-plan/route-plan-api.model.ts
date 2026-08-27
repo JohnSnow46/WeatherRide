@@ -24,3 +24,17 @@ export interface PlanRouteResponse {
   samples: RouteSampleDto[];
   track: TrackPointDto[];
 }
+
+export interface GpsPointDto {
+  latitude: number;
+  longitude: number;
+}
+
+export interface PlanDirectRouteRequestDto {
+  pointA: GpsPointDto;
+  pointB: GpsPointDto;
+  departureAt: string;
+  averageSpeedKmh: number | null;
+  plannedDurationHours: number | null;
+  sampleCount: number;
+}
