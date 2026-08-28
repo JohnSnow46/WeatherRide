@@ -67,6 +67,9 @@
           aria-label="Point B longitude"
         />
       </div>
+      @if (isSamePoint()) {
+        <span class="field-hint">Point B must differ from Point A.</span>
+      }
     </div>
   }
 

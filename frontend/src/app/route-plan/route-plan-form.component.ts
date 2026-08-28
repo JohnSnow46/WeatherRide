@@ -57,11 +57,23 @@ export class RoutePlanFormComponent {
         this.isValidLatitude(value.pointALatitude) &&
         this.isValidLongitude(value.pointALongitude) &&
         this.isValidLatitude(value.pointBLatitude) &&
-        this.isValidLongitude(value.pointBLongitude)
+        this.isValidLongitude(value.pointBLongitude) &&
+        !this.isSamePoint()
       );
     }
 
     return !!this.selectedFile();
+  });
+
+  readonly isSamePoint = computed(() => {
+    const value = this.formValue();
+    return (
+      value.routeMode === 'direct' &&
+      value.pointALatitude != null &&
+      value.pointALongitude != null &&
+      value.pointALatitude === value.pointBLatitude &&
+      value.pointALongitude === value.pointBLongitude
+    );
   });
 
   onFileSelected(event: Event): void {

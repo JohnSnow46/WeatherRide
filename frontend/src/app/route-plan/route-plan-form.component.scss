@@ -331,6 +331,11 @@ label[for='sampleCount'] {
   border-radius: 0.5rem;
 }
 
+.field-hint {
+  font-size: 0.8125rem;
+  color: var(--color-accent-danger);
+}
+
 .spinner {
   width: 0.9rem;
   height: 0.9rem;
