@@ -145,6 +145,105 @@ public class PlanRouteEndpointTests
         Assert.Equal(StatusCodes.Status400BadRequest, problem!.Status);
     }
 
+    [Fact]
+    public async Task PlanDirect_ValidPointsAndSpeed_ReturnsOkWithSamplesMatchingEndpoints()
+    {
+        using var factory = CreateFactory(new FakeWeatherClient());
+        using var client = factory.CreateClient();
+
+        var request = new PlanDirectRouteRequest
+        {
+            PointA = new GpsPoint(52.0, 21.0),
+            PointB = new GpsPoint(52.2, 21.2),
+            DepartureAt = DepartureAt,
+            AverageSpeedKmh = 30,
+            SampleCount = 6,
+        };
+
+        using var response = await client.PostAsJsonAsync("/api/routes/plan-direct", request);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        var body = await response.Content.ReadFromJsonAsync<PlanRouteResponse>();
+        Assert.NotNull(body);
+        Assert.Equal(6, body!.Samples.Count);
+        Assert.Equal(52.0, body.Samples[0].Latitude, precision: 6);
+        Assert.Equal(21.0, body.Samples[0].Longitude, precision: 6);
+        Assert.Equal(52.2, body.Samples[^1].Latitude, precision: 6);
+        Assert.Equal(21.2, body.Samples[^1].Longitude, precision: 6);
+    }
+
+    [Fact]
+    public async Task PlanDirect_MissingPointB_ReturnsBadRequestProblemDetails()
+    {
+        using var factory = CreateFactory(new FakeWeatherClient());
+        using var client = factory.CreateClient();
+
+        var request = new PlanDirectRouteRequest
+        {
+            PointA = new GpsPoint(52.0, 21.0),
+            PointB = null,
+            DepartureAt = DepartureAt,
+            AverageSpeedKmh = 30,
+            SampleCount = 6,
+        };
+
+        using var response = await client.PostAsJsonAsync("/api/routes/plan-direct", request);
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        var problem = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+        Assert.NotNull(problem);
+        Assert.Equal(StatusCodes.Status400BadRequest, problem!.Status);
+    }
+
+    [Fact]
+    public async Task PlanDirect_BothSpeedAndDurationProvided_ReturnsBadRequestProblemDetails()
+    {
+        using var factory = CreateFactory(new FakeWeatherClient());
+        using var client = factory.CreateClient();
+
+        var request = new PlanDirectRouteRequest
+        {
+            PointA = new GpsPoint(52.0, 21.0),
+            PointB = new GpsPoint(52.2, 21.2),
+            DepartureAt = DepartureAt,
+            AverageSpeedKmh = 30,
+            PlannedDurationHours = 1,
+            SampleCount = 6,
+        };
+
+        using var response = await client.PostAsJsonAsync("/api/routes/plan-direct", request);
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        var problem = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+        Assert.NotNull(problem);
+        Assert.Equal(StatusCodes.Status400BadRequest, problem!.Status);
+    }
+
+    [Fact]
+    public async Task PlanDirect_IdenticalPoints_ReturnsBadRequestProblemDetails()
+    {
+        using var factory = CreateFactory(new FakeWeatherClient());
+        using var client = factory.CreateClient();
+
+        var samePoint = new GpsPoint(52.0, 21.0);
+        var request = new PlanDirectRouteRequest
+        {
+            PointA = samePoint,
+            PointB = samePoint,
+            DepartureAt = DepartureAt,
+            AverageSpeedKmh = 30,
+            SampleCount = 6,
+        };
+
+        using var response = await client.PostAsJsonAsync("/api/routes/plan-direct", request);
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        var problem = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+        Assert.NotNull(problem);
+        Assert.Equal(StatusCodes.Status400BadRequest, problem!.Status);
+    }
+
     private static MultipartFormDataContent BuildValidForm(int sampleCount) => BuildForm(ThreePointGpx, sampleCount);
 
     private static MultipartFormDataContent BuildForm(string gpxXml, int sampleCount)
