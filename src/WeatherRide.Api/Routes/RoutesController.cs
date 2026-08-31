@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using WeatherRide.Application.Routes;
+using WeatherRide.Domain.Routes;
 
 namespace WeatherRide.Api.Routes;
 
@@ -9,6 +10,7 @@ public sealed class RoutesController : ControllerBase
 {
     private const string InvalidInputTitle = "Nieprawidłowe dane wejściowe";
     private const string SpeedXorDurationDetail = "Podaj albo średnią prędkość, albo czas trasy, nie oba.";
+    private const string InvalidCoordinatesDetail = "Współrzędne punktu muszą mieścić się w zakresie: szerokość -90..90, długość -180..180.";
 
     private readonly PlanTripUseCase _planTripUseCase;
     private readonly PlanDirectTripUseCase _planDirectTripUseCase;
@@ -70,6 +72,14 @@ public sealed class RoutesController : ControllerBase
                 statusCode: StatusCodes.Status400BadRequest);
         }
 
+        if (!IsValidCoordinate(request.PointA.Value) || !IsValidCoordinate(request.PointB.Value))
+        {
+            return Problem(
+                title: InvalidInputTitle,
+                detail: InvalidCoordinatesDetail,
+                statusCode: StatusCodes.Status400BadRequest);
+        }
+
         if (request.AverageSpeedKmh.HasValue == request.PlannedDurationHours.HasValue)
         {
             return Problem(
@@ -89,6 +99,9 @@ public sealed class RoutesController : ControllerBase
 
         return Ok(ToResponse(result));
     }
+
+    private static bool IsValidCoordinate(GpsPoint point) =>
+        point.Latitude is >= -90 and <= 90 && point.Longitude is >= -180 and <= 180;
 
     private static PlanRouteResponse ToResponse(TripPlanResult result)
     {

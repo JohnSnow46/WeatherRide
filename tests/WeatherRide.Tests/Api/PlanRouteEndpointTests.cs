@@ -244,6 +244,29 @@ public class PlanRouteEndpointTests
         Assert.Equal(StatusCodes.Status400BadRequest, problem!.Status);
     }
 
+    [Fact]
+    public async Task PlanDirect_LatitudeOutOfRange_ReturnsBadRequestProblemDetails()
+    {
+        using var factory = CreateFactory(new FakeWeatherClient());
+        using var client = factory.CreateClient();
+
+        var request = new PlanDirectRouteRequest
+        {
+            PointA = new GpsPoint(90.5, 21.0),
+            PointB = new GpsPoint(52.2, 21.2),
+            DepartureAt = DepartureAt,
+            AverageSpeedKmh = 30,
+            SampleCount = 6,
+        };
+
+        using var response = await client.PostAsJsonAsync("/api/routes/plan-direct", request);
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        var problem = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+        Assert.NotNull(problem);
+        Assert.Equal(StatusCodes.Status400BadRequest, problem!.Status);
+    }
+
     private static MultipartFormDataContent BuildValidForm(int sampleCount) => BuildForm(ThreePointGpx, sampleCount);
 
     private static MultipartFormDataContent BuildForm(string gpxXml, int sampleCount)
