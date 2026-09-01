@@ -83,6 +83,12 @@ public sealed class XDocumentGpxParser : IGpxParser
             return false;
         }
 
+        if (latitude is < -90 or > 90 || longitude is < -180 or > 180)
+        {
+            throw new GpxParsingException(
+                $"Plik GPX zawiera punkt z nieprawidłowymi współrzędnymi (lat={latitude}, lon={longitude}).");
+        }
+
         point = new GpsPoint(latitude, longitude);
         return true;
     }
