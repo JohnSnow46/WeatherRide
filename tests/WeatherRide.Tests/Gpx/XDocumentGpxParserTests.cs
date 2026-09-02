@@ -181,6 +181,24 @@ public class XDocumentGpxParserTests
     }
 
     [Fact]
+    public async Task ParseAsync_PointWithNaNLatitude_ThrowsGpxParsingException()
+    {
+        const string gpx = """
+            <?xml version="1.0" encoding="UTF-8"?>
+            <gpx version="1.1" xmlns="http://www.topografix.com/GPX/1/1">
+              <trk>
+                <trkseg>
+                  <trkpt lat="52.0" lon="21.0"></trkpt>
+                  <trkpt lat="NaN" lon="21.1"></trkpt>
+                </trkseg>
+              </trk>
+            </gpx>
+            """;
+
+        await Assert.ThrowsAsync<GpxParsingException>(() => ParseAsync(gpx));
+    }
+
+    [Fact]
     public async Task ParseAsync_MalformedXml_ThrowsGpxParsingExceptionNotXmlException()
     {
         const string gpx = """

@@ -83,7 +83,7 @@ public sealed class XDocumentGpxParser : IGpxParser
             return false;
         }
 
-        if (latitude is < -90 or > 90 || longitude is < -180 or > 180)
+        if (!IsValidCoordinate(latitude, longitude))
         {
             throw new GpxParsingException(
                 $"Plik GPX zawiera punkt z nieprawidłowymi współrzędnymi (lat={latitude}, lon={longitude}).");
@@ -92,6 +92,12 @@ public sealed class XDocumentGpxParser : IGpxParser
         point = new GpsPoint(latitude, longitude);
         return true;
     }
+
+    // Zakres jako warunek dodatni (nie "poza zakresem") — NaN nie spełnia żadnego z
+    // porównań `>=`/`<=`, więc trafia tu jako nieprawidłowy zamiast po cichu przejść
+    // dalej, tak jak działałoby odwrotne porównanie `< -90 or > 90`.
+    private static bool IsValidCoordinate(double latitude, double longitude) =>
+        latitude is >= -90 and <= 90 && longitude is >= -180 and <= 180;
 
     private static Route BuildRoute(List<GpsPoint> points)
     {
