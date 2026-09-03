@@ -38,6 +38,23 @@ public class TripPlanTests
             () => TripPlan.Create(DepartureAt, totalDistanceKm: 100, averageSpeedKmh: null, plannedDurationHours: plannedDurationHours));
     }
 
+    [Theory]
+    [InlineData(double.NaN)]
+    [InlineData(double.PositiveInfinity)]
+    [InlineData(double.NegativeInfinity)]
+    public void Create_NonFiniteAverageSpeed_ThrowsTripPlanValidationException(double averageSpeedKmh)
+    {
+        Assert.Throws<TripPlanValidationException>(
+            () => TripPlan.Create(DepartureAt, totalDistanceKm: 100, averageSpeedKmh: averageSpeedKmh, plannedDurationHours: null));
+    }
+
+    [Fact]
+    public void Create_NaNPlannedDuration_ThrowsTripPlanValidationException()
+    {
+        Assert.Throws<TripPlanValidationException>(
+            () => TripPlan.Create(DepartureAt, totalDistanceKm: 100, averageSpeedKmh: null, plannedDurationHours: double.NaN));
+    }
+
     [Fact]
     public void Create_PlannedDurationProvided_CalculatesAverageSpeedFromDistanceAndDuration()
     {

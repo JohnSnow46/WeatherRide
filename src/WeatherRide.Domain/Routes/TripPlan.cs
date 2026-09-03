@@ -54,9 +54,9 @@ public sealed class TripPlan
             resolvedSpeedKmh = totalDistanceKm / plannedDurationHours.Value;
         }
 
-        if (resolvedSpeedKmh <= 0)
+        if (!double.IsFinite(resolvedSpeedKmh) || resolvedSpeedKmh <= 0)
         {
-            throw new TripPlanValidationException("AverageSpeedKmh musi być większe od zera.");
+            throw new TripPlanValidationException("AverageSpeedKmh musi być skończoną liczbą większą od zera.");
         }
 
         return new TripPlan(departureAt, resolvedSpeedKmh);
