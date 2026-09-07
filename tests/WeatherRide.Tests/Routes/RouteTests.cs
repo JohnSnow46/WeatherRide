@@ -43,6 +43,17 @@ public class RouteTests
     }
 
     [Fact]
+    public void Create_PointWithNaNCoordinateProducesNaNDistance_ThrowsRouteValidationException()
+    {
+        // GpsPoint sam nie waliduje współrzędnych (robią to warstwy wyżej — GPX parser,
+        // kontroler) — Route.Create musi więc bronić się samodzielnie przed NaN, który
+        // inaczej przeszedłby przez warunek `totalDistanceKm <= 0` bez wyjątku.
+        var points = new[] { new GpsPoint(0, 0), new GpsPoint(double.NaN, 4) };
+
+        Assert.Throws<RouteValidationException>(() => Route.Create(points));
+    }
+
+    [Fact]
     public void Create_ThreePoints_CumulativeDistancesKmIsPrefixSumStartingAtZero()
     {
         var points = new[] { new GpsPoint(0, 0), new GpsPoint(0, 4), new GpsPoint(1, 4) };

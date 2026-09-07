@@ -37,9 +37,12 @@ public sealed class Route
         var cumulativeDistancesKm = CalculateCumulativeDistancesKm(points);
         var totalDistanceKm = cumulativeDistancesKm[^1];
 
-        if (totalDistanceKm <= 0)
+        // `double.IsFinite` sprawdzone jawnie, nie tylko `<= 0` — NaN nie spełnia żadnego z
+        // porównań `<=`/`>`, więc przy samym `<= 0` przeszłoby tędy bez wyjątku (patrz
+        // analogiczna uwaga przy IsValidCoordinate w XDocumentGpxParser).
+        if (!double.IsFinite(totalDistanceKm) || totalDistanceKm <= 0)
         {
-            throw new RouteValidationException("Trasa jest zdegenerowana — dystans całkowity musi być większy od zera.");
+            throw new RouteValidationException("Trasa jest zdegenerowana — dystans całkowity musi być skończoną liczbą większą od zera.");
         }
 
         return new Route(points, totalDistanceKm, cumulativeDistancesKm);
