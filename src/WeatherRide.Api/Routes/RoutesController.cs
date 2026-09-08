@@ -101,7 +101,7 @@ public sealed class RoutesController : ControllerBase
     }
 
     private static bool IsValidCoordinate(GpsPoint point) =>
-        point.Latitude is >= -90 and <= 90 && point.Longitude is >= -180 and <= 180;
+        GpsPoint.IsValid(point.Latitude, point.Longitude);
 
     private static PlanRouteResponse ToResponse(TripPlanResult result)
     {

@@ -9,6 +9,21 @@ public readonly record struct GpsPoint(double Latitude, double Longitude)
     private const double EarthRadiusKm = 6371.0088;
 
     /// <summary>
+    /// Czy podana para współrzędnych mieści się w geograficznie poprawnym zakresie:
+    /// szerokość -90..90, długość -180..180. Wspólne dla wszystkich miejsc, które muszą
+    /// zweryfikować współrzędne przed zbudowaniem <see cref="GpsPoint"/> (walidacja wejścia
+    /// w Api, parsowanie GPX w Infrastructure) — jedno źródło prawdy zamiast zduplikowanego
+    /// warunku w każdej warstwie.
+    /// </summary>
+    /// <remarks>
+    /// Zakres jako warunek dodatni (nie "poza zakresem") — NaN nie spełnia żadnego z porównań
+    /// <c>&gt;=</c>/<c>&lt;=</c>, więc trafia tu jako nieprawidłowe zamiast po cichu przejść
+    /// dalej, tak jak działałoby odwrotne porównanie <c>&lt; -90 or &gt; 90</c>.
+    /// </remarks>
+    public static bool IsValid(double latitude, double longitude) =>
+        latitude is >= -90 and <= 90 && longitude is >= -180 and <= 180;
+
+    /// <summary>
     /// Odległość Haversine (po powierzchni Ziemi, w km) między tym punktem a <paramref name="other"/>.
     /// </summary>
     public double DistanceToKm(GpsPoint other)
