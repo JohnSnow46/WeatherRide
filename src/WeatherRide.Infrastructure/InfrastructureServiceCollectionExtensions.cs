@@ -12,8 +12,14 @@ public static class InfrastructureServiceCollectionExtensions
     {
         services.AddScoped<IGpxParser, XDocumentGpxParser>();
 
-        services.AddHttpClient<IWeatherClient, OpenMeteoWeatherClient>(
-            client => client.BaseAddress = new Uri("https://api.open-meteo.com/"));
+        // Bez jawnego Timeout żądanie do Open-Meteo dziedziczy domyślne 100s HttpClienta —
+        // przy zawieszonym upstreamie użytkownik czekałby na odpowiedź (błąd lub dane)
+        // niewspółmiernie długo jak na pojedyncze żądanie w ramach jednego HTTP requestu.
+        services.AddHttpClient<IWeatherClient, OpenMeteoWeatherClient>(client =>
+        {
+            client.BaseAddress = new Uri("https://api.open-meteo.com/");
+            client.Timeout = TimeSpan.FromSeconds(15);
+        });
 
         return services;
     }
