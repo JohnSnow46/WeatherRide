@@ -58,4 +58,32 @@ public class GpsPointTests
         Assert.True(double.IsFinite(distanceKm));
         Assert.InRange(distanceKm, 0, 6371.0088 * Math.PI);
     }
+
+    [Theory]
+    [InlineData(-90, -180)]
+    [InlineData(90, 180)]
+    [InlineData(0, 0)]
+    [InlineData(-90, 180)]
+    [InlineData(90, -180)]
+    public void IsValid_CoordinatesOnOrInsideBoundary_ReturnsTrue(double latitude, double longitude)
+    {
+        Assert.True(GpsPoint.IsValid(latitude, longitude));
+    }
+
+    [Theory]
+    [InlineData(90.0000001, 0)]
+    [InlineData(-90.0000001, 0)]
+    [InlineData(0, 180.0000001)]
+    [InlineData(0, -180.0000001)]
+    [InlineData(double.NaN, 0)]
+    [InlineData(0, double.NaN)]
+    [InlineData(double.PositiveInfinity, 0)]
+    [InlineData(double.NegativeInfinity, 0)]
+    public void IsValid_CoordinatesOutsideBoundaryOrNonFinite_ReturnsFalse(double latitude, double longitude)
+    {
+        // Zakres jest sprawdzany jako warunek dodatni (`>=`/`<=`), nie negacja "poza
+        // zakresem" — ten test pilnuje, żeby NaN/Infinity dalej trafiały tu jako
+        // nieprawidłowe, a nie po cichu przechodziły przez porównania.
+        Assert.False(GpsPoint.IsValid(latitude, longitude));
+    }
 }
