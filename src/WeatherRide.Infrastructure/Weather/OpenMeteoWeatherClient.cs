@@ -33,6 +33,12 @@ public sealed class OpenMeteoWeatherClient : IWeatherClient
         var locations = await _httpClient.GetFromJsonAsync<List<OpenMeteoLocationResponse>>(requestUri, cancellationToken)
             ?? throw new InvalidOperationException("Open-Meteo zwróciło pustą odpowiedź.");
 
+        if (locations.Count != samples.Count)
+        {
+            throw new InvalidOperationException(
+                $"Open-Meteo zwróciło {locations.Count} lokalizacji zamiast oczekiwanych {samples.Count}.");
+        }
+
         return samples
             .Select((sample, i) => OpenMeteoResponseMapper.Map(locations[i], sample.EtaAt))
             .ToList();
