@@ -20,6 +20,18 @@ public static class OpenMeteoResponseMapper
             return null;
         }
 
+        // Tablice godzinowe muszą być równoległe (ten sam indeks = ta sama godzina) — bez
+        // tej kontroli niespójna odpowiedź Open-Meteo (np. skrócona jedna z tablic) trafiłaby
+        // na IndexOutOfRangeException zamiast czytelnego "brak prognozy dla tej lokalizacji",
+        // analogicznie do kontroli liczby lokalizacji w OpenMeteoWeatherClient.
+        if (hourly.Temperature2m.Length != hourly.Time.Length
+            || hourly.WindSpeed10m.Length != hourly.Time.Length
+            || hourly.Precipitation.Length != hourly.Time.Length
+            || hourly.WindDirection10m.Length != hourly.Time.Length)
+        {
+            return null;
+        }
+
         var target = RoundToNearestHour(etaAt.DateTime);
         var times = ParseTimes(hourly.Time);
 

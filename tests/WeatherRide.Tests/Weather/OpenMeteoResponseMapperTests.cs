@@ -57,4 +57,16 @@ public class OpenMeteoResponseMapperTests
 
         Assert.Null(forecast);
     }
+
+    [Fact]
+    public void Map_HourlyArrayLengthMismatch_ReturnsNullInsteadOfThrowing()
+    {
+        var location = BuildLocation();
+        location.Hourly!.Temperature2m = [18.0, 20.5];
+        var etaAt = new DateTimeOffset(2026, 7, 30, 9, 10, 0, TimeSpan.Zero);
+
+        var forecast = OpenMeteoResponseMapper.Map(location, etaAt);
+
+        Assert.Null(forecast);
+    }
 }
