@@ -130,6 +130,30 @@ public class PlanRouteEndpointTests
     }
 
     [Fact]
+    public async Task Plan_MissingDepartureAt_ReturnsBadRequestProblemDetails()
+    {
+        using var factory = CreateFactory(new FakeWeatherClient());
+        using var client = factory.CreateClient();
+
+        var gpxContent = new StreamContent(new MemoryStream(Encoding.UTF8.GetBytes(ThreePointGpx)));
+        gpxContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/gpx+xml");
+
+        using var form = new MultipartFormDataContent
+        {
+            { gpxContent, "GpxFile", "route.gpx" },
+            { new StringContent("30"), "AverageSpeedKmh" },
+            { new StringContent("6"), "SampleCount" },
+        };
+
+        using var response = await client.PostAsync("/api/routes/plan", form);
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        var problem = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+        Assert.NotNull(problem);
+        Assert.Equal(StatusCodes.Status400BadRequest, problem!.Status);
+    }
+
+    [Fact]
     public async Task Plan_GpxWithSinglePoint_ReturnsBadRequestProblemDetails()
     {
         using var factory = CreateFactory(new FakeWeatherClient());
@@ -232,6 +256,28 @@ public class PlanRouteEndpointTests
             PointA = samePoint,
             PointB = samePoint,
             DepartureAt = DepartureAt,
+            AverageSpeedKmh = 30,
+            SampleCount = 6,
+        };
+
+        using var response = await client.PostAsJsonAsync("/api/routes/plan-direct", request);
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        var problem = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+        Assert.NotNull(problem);
+        Assert.Equal(StatusCodes.Status400BadRequest, problem!.Status);
+    }
+
+    [Fact]
+    public async Task PlanDirect_MissingDepartureAt_ReturnsBadRequestProblemDetails()
+    {
+        using var factory = CreateFactory(new FakeWeatherClient());
+        using var client = factory.CreateClient();
+
+        var request = new PlanDirectRouteRequest
+        {
+            PointA = new GpsPoint(52.0, 21.0),
+            PointB = new GpsPoint(52.2, 21.2),
             AverageSpeedKmh = 30,
             SampleCount = 6,
         };

@@ -11,6 +11,7 @@ public sealed class RoutesController : ControllerBase
     private const string InvalidInputTitle = "Nieprawidłowe dane wejściowe";
     private const string SpeedXorDurationDetail = "Podaj albo średnią prędkość, albo czas trasy, nie oba.";
     private const string InvalidCoordinatesDetail = "Współrzędne punktu muszą mieścić się w zakresie: szerokość -90..90, długość -180..180.";
+    private const string DepartureAtRequiredDetail = "DepartureAt jest wymagane.";
 
     private readonly PlanTripUseCase _planTripUseCase;
     private readonly PlanDirectTripUseCase _planDirectTripUseCase;
@@ -33,6 +34,14 @@ public sealed class RoutesController : ControllerBase
             return Problem(
                 title: InvalidInputTitle,
                 detail: "Plik GPX jest wymagany.",
+                statusCode: StatusCodes.Status400BadRequest);
+        }
+
+        if (request.DepartureAt == default)
+        {
+            return Problem(
+                title: InvalidInputTitle,
+                detail: DepartureAtRequiredDetail,
                 statusCode: StatusCodes.Status400BadRequest);
         }
 
@@ -77,6 +86,14 @@ public sealed class RoutesController : ControllerBase
             return Problem(
                 title: InvalidInputTitle,
                 detail: InvalidCoordinatesDetail,
+                statusCode: StatusCodes.Status400BadRequest);
+        }
+
+        if (request.DepartureAt == default)
+        {
+            return Problem(
+                title: InvalidInputTitle,
+                detail: DepartureAtRequiredDetail,
                 statusCode: StatusCodes.Status400BadRequest);
         }
 
