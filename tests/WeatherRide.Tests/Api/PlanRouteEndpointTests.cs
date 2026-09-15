@@ -154,6 +154,32 @@ public class PlanRouteEndpointTests
     }
 
     [Fact]
+    public async Task Plan_GpxFileExceedsMaxSize_ReturnsBadRequestProblemDetails()
+    {
+        using var factory = CreateFactory(new FakeWeatherClient());
+        using var client = factory.CreateClient();
+
+        var oversizedContent = new string('a', 5 * 1024 * 1024 + 1);
+        var gpxContent = new StreamContent(new MemoryStream(Encoding.UTF8.GetBytes(oversizedContent)));
+        gpxContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/gpx+xml");
+
+        using var form = new MultipartFormDataContent
+        {
+            { gpxContent, "GpxFile", "route.gpx" },
+            { new StringContent(DepartureAt.ToString("O")), "DepartureAt" },
+            { new StringContent("30"), "AverageSpeedKmh" },
+            { new StringContent("6"), "SampleCount" },
+        };
+
+        using var response = await client.PostAsync("/api/routes/plan", form);
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        var problem = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+        Assert.NotNull(problem);
+        Assert.Equal(StatusCodes.Status400BadRequest, problem!.Status);
+    }
+
+    [Fact]
     public async Task Plan_GpxWithSinglePoint_ReturnsBadRequestProblemDetails()
     {
         using var factory = CreateFactory(new FakeWeatherClient());

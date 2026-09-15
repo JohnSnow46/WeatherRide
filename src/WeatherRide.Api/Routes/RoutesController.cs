@@ -12,6 +12,8 @@ public sealed class RoutesController : ControllerBase
     private const string SpeedXorDurationDetail = "Podaj albo średnią prędkość, albo czas trasy, nie oba.";
     private const string InvalidCoordinatesDetail = "Współrzędne punktu muszą mieścić się w zakresie: szerokość -90..90, długość -180..180.";
     private const string DepartureAtRequiredDetail = "DepartureAt jest wymagane.";
+    private const long MaxGpxFileSizeBytes = 5 * 1024 * 1024;
+    private const string GpxFileTooLargeDetail = "Plik GPX nie może przekraczać 5 MB.";
 
     private readonly PlanTripUseCase _planTripUseCase;
     private readonly PlanDirectTripUseCase _planDirectTripUseCase;
@@ -34,6 +36,14 @@ public sealed class RoutesController : ControllerBase
             return Problem(
                 title: InvalidInputTitle,
                 detail: "Plik GPX jest wymagany.",
+                statusCode: StatusCodes.Status400BadRequest);
+        }
+
+        if (request.GpxFile.Length > MaxGpxFileSizeBytes)
+        {
+            return Problem(
+                title: InvalidInputTitle,
+                detail: GpxFileTooLargeDetail,
                 statusCode: StatusCodes.Status400BadRequest);
         }
 
