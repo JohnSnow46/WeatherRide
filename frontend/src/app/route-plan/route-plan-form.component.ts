@@ -151,7 +151,7 @@ export class RoutePlanFormComponent {
   }
 
   private isPositiveNumber(value: number | null | undefined): boolean {
-    return typeof value === 'number' && !Number.isNaN(value) && value > 0;
+    return typeof value === 'number' && Number.isFinite(value) && value > 0;
   }
 
   private isValidLatitude(value: number | null | undefined): boolean {

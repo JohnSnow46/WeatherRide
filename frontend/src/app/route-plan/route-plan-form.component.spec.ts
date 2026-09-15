@@ -49,6 +49,18 @@ describe('RoutePlanFormComponent', () => {
     );
   });
 
+  it('disables submit when averageSpeedKmh is Infinity', () => {
+    const fixture = TestBed.createComponent(RoutePlanFormComponent);
+    fixture.componentInstance.selectedFile.set(new File(['<gpx></gpx>'], 'route.gpx'));
+    fixture.componentInstance.form.patchValue({
+      departureAt: '2026-08-01T10:00',
+      averageSpeedKmh: Infinity
+    });
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.canSubmit()).toBeFalse();
+  });
+
   it('switches to direct point A/B mode and disables submit until both points are valid', () => {
     const fixture = TestBed.createComponent(RoutePlanFormComponent);
     fixture.componentInstance.form.patchValue({
