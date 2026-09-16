@@ -48,11 +48,14 @@ public class TripPlanTests
             () => TripPlan.Create(DepartureAt, totalDistanceKm: 100, averageSpeedKmh: averageSpeedKmh, plannedDurationHours: null));
     }
 
-    [Fact]
-    public void Create_NaNPlannedDuration_ThrowsTripPlanValidationException()
+    [Theory]
+    [InlineData(double.NaN)]
+    [InlineData(double.PositiveInfinity)]
+    [InlineData(double.NegativeInfinity)]
+    public void Create_NonFinitePlannedDuration_ThrowsTripPlanValidationException(double plannedDurationHours)
     {
         Assert.Throws<TripPlanValidationException>(
-            () => TripPlan.Create(DepartureAt, totalDistanceKm: 100, averageSpeedKmh: null, plannedDurationHours: double.NaN));
+            () => TripPlan.Create(DepartureAt, totalDistanceKm: 100, averageSpeedKmh: null, plannedDurationHours: plannedDurationHours));
     }
 
     [Fact]
