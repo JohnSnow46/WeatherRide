@@ -12,6 +12,8 @@ import { RoutePlanStateService } from './route-plan-state.service';
   styleUrl: './route-plan-form.component.scss'
 })
 export class RoutePlanFormComponent {
+  private static readonly MAX_GPX_FILE_SIZE_BYTES = 5 * 1024 * 1024;
+
   private readonly fb = inject(FormBuilder);
   private readonly routePlanApiService = inject(RoutePlanApiService);
   protected readonly routePlanStateService = inject(RoutePlanStateService);
@@ -78,7 +80,7 @@ export class RoutePlanFormComponent {
 
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
-    this.selectedFile.set(input.files?.[0] ?? null);
+    this.setSelectedFile(input.files?.[0] ?? null);
   }
 
   onDragOver(event: DragEvent): void {
@@ -96,13 +98,24 @@ export class RoutePlanFormComponent {
     this.isDragging.set(false);
     const file = event.dataTransfer?.files?.[0] ?? null;
     if (file) {
-      this.selectedFile.set(file);
+      this.setSelectedFile(file);
     }
   }
 
   clearFile(event: Event): void {
     event.preventDefault();
     this.selectedFile.set(null);
+  }
+
+  private setSelectedFile(file: File | null): void {
+    if (file && file.size > RoutePlanFormComponent.MAX_GPX_FILE_SIZE_BYTES) {
+      this.routePlanStateService.error.set('The GPX file must not exceed 5 MB.');
+      this.selectedFile.set(null);
+      return;
+    }
+
+    this.routePlanStateService.error.set(null);
+    this.selectedFile.set(file);
   }
 
   onSubmit(): void {

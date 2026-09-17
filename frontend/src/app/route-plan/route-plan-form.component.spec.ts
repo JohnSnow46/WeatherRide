@@ -4,6 +4,7 @@ import { of } from 'rxjs';
 
 import { RoutePlanFormComponent } from './route-plan-form.component';
 import { RoutePlanApiService } from './route-plan-api.service';
+import { RoutePlanStateService } from './route-plan-state.service';
 import { PlanRouteResponse } from './route-plan-api.model';
 
 describe('RoutePlanFormComponent', () => {
@@ -24,6 +25,20 @@ describe('RoutePlanFormComponent', () => {
 
     const button = fixture.nativeElement.querySelector('button[type="submit"]') as HTMLButtonElement;
     expect(button.disabled).toBeTrue();
+  });
+
+  it('rejects a dropped/selected GPX file over 5 MB and surfaces an error instead of setting it', () => {
+    const fixture = TestBed.createComponent(RoutePlanFormComponent);
+    const stateService = TestBed.inject(RoutePlanStateService);
+    const oversizedFile = new File([new Uint8Array(5 * 1024 * 1024 + 1)], 'route.gpx');
+
+    fixture.componentInstance.onDrop({
+      preventDefault: () => {},
+      dataTransfer: { files: [oversizedFile] }
+    } as unknown as DragEvent);
+
+    expect(fixture.componentInstance.selectedFile()).toBeNull();
+    expect(stateService.error()).toBe('The GPX file must not exceed 5 MB.');
   });
 
   it('sends departureAt as raw local clock digits, without timezone-offset conversion', () => {
