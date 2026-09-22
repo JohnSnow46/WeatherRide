@@ -69,4 +69,16 @@ public class OpenMeteoResponseMapperTests
 
         Assert.Null(forecast);
     }
+
+    [Fact]
+    public void Map_MalformedHourlyTimeString_ReturnsNullInsteadOfThrowing()
+    {
+        var location = BuildLocation();
+        location.Hourly!.Time = ["not-a-date", "2026-07-30T09:00", "2026-07-30T10:00"];
+        var etaAt = new DateTimeOffset(2026, 7, 30, 9, 10, 0, TimeSpan.Zero);
+
+        var forecast = OpenMeteoResponseMapper.Map(location, etaAt);
+
+        Assert.Null(forecast);
+    }
 }

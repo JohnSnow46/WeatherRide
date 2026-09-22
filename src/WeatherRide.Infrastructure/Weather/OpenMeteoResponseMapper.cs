@@ -33,7 +33,16 @@ public static class OpenMeteoResponseMapper
         }
 
         var target = RoundToNearestHour(etaAt.DateTime);
-        var times = ParseTimes(hourly.Time);
+
+        DateTime[] times;
+        try
+        {
+            times = ParseTimes(hourly.Time);
+        }
+        catch (FormatException)
+        {
+            return null;
+        }
 
         if (target < times[0] || target > times[^1] + HorizonTolerance)
         {
