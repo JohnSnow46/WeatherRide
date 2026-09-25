@@ -4,6 +4,7 @@ import { RoutePlanStateService } from './route-plan-state.service';
 import { WeatherForecastDto } from './route-plan-api.model';
 import { weatherIconKind } from './weather-icon';
 import { WeatherGlyphComponent } from './weather-glyph.component';
+import { summarizePrecipitationAlert } from './route-interpolation';
 
 @Component({
   selector: 'app-route-plan-result',
@@ -36,6 +37,15 @@ export class RoutePlanResultComponent {
       minute: '2-digit'
     });
   }
+
+  /** One-glance rain summary for the header badge — "3 of 12 points expect rain". */
+  protected readonly precipitationAlert = computed(() => {
+    const result = this.routePlanStateService.result();
+    if (!result) {
+      return null;
+    }
+    return summarizePrecipitationAlert(result.samples);
+  });
 
   protected iconKind(weather: WeatherForecastDto) {
     return weatherIconKind(weather);

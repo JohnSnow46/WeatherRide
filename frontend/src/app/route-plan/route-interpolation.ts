@@ -79,6 +79,31 @@ export function interpolateWeather(samples: RouteSampleDto[], distanceKm: number
   return pickWeather(last.weather, false);
 }
 
+/** Default precipitation threshold (mm/h) used for the "how many points get rained on"
+ * summary badge above the results list. */
+export const DEFAULT_PRECIPITATION_ALERT_THRESHOLD_MM = 1;
+
+export interface PrecipitationAlertSummary {
+  samplesAboveThreshold: number;
+  samplesWithForecast: number;
+}
+
+/** Counts how many samples with a forecast exceed the given precipitation threshold —
+ * a one-glance answer to "is this route worth riding" instead of scanning every point. */
+export function summarizePrecipitationAlert(
+  samples: RouteSampleDto[],
+  thresholdMm: number = DEFAULT_PRECIPITATION_ALERT_THRESHOLD_MM
+): PrecipitationAlertSummary {
+  const withWeather = samples.filter((s): s is RouteSampleDto & { weather: NonNullable<RouteSampleDto['weather']> } =>
+    s.weather !== null
+  );
+
+  return {
+    samplesAboveThreshold: withWeather.filter(s => s.weather.precipitationMm > thresholdMm).length,
+    samplesWithForecast: withWeather.length
+  };
+}
+
 function pickWeather(
   weather: NonNullable<RouteSampleDto['weather']>,
   isEstimatedBeyondForecastRange: boolean

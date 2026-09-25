@@ -1,5 +1,5 @@
 import { RouteSampleDto, TrackPointDto } from './route-plan-api.model';
-import { interpolatePosition, interpolateWeather } from './route-interpolation';
+import { interpolatePosition, interpolateWeather, summarizePrecipitationAlert } from './route-interpolation';
 
 describe('interpolatePosition', () => {
   const track: TrackPointDto[] = [
@@ -98,5 +98,56 @@ describe('interpolateWeather', () => {
     const result = interpolateWeather(samples, 5);
 
     expect(result).toBeNull();
+  });
+});
+
+describe('summarizePrecipitationAlert', () => {
+  function sampleWithPrecipitation(precipitationMm: number | null): RouteSampleDto {
+    return {
+      latitude: 0,
+      longitude: 0,
+      distanceFromStartKm: 0,
+      etaAt: new Date().toISOString(),
+      weather:
+        precipitationMm === null
+          ? null
+          : {
+              temperatureCelsius: 15,
+              windSpeedKmh: 10,
+              precipitationMm,
+              windDirectionDegrees: 180,
+              relativeHumidityPercent: 50,
+              uvIndex: 2,
+              windGustsKmh: 15
+            }
+    };
+  }
+
+  it('summarizePrecipitationAlert_SomeSamplesAboveDefaultThreshold_CountsOnlyThose', () => {
+    const samples = [
+      sampleWithPrecipitation(0),
+      sampleWithPrecipitation(0.5),
+      sampleWithPrecipitation(1.5),
+      sampleWithPrecipitation(3),
+      sampleWithPrecipitation(null)
+    ];
+
+    const result = summarizePrecipitationAlert(samples);
+
+    expect(result).toEqual({ samplesAboveThreshold: 2, samplesWithForecast: 4 });
+  });
+
+  it('summarizePrecipitationAlert_CustomThreshold_UsesItInsteadOfDefault', () => {
+    const samples = [sampleWithPrecipitation(2), sampleWithPrecipitation(4)];
+
+    const result = summarizePrecipitationAlert(samples, 3);
+
+    expect(result).toEqual({ samplesAboveThreshold: 1, samplesWithForecast: 2 });
+  });
+
+  it('summarizePrecipitationAlert_NoForecasts_ReturnsZeroCounts', () => {
+    const result = summarizePrecipitationAlert([sampleWithPrecipitation(null)]);
+
+    expect(result).toEqual({ samplesAboveThreshold: 0, samplesWithForecast: 0 });
   });
 });

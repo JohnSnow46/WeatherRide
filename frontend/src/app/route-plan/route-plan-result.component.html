@@ -5,6 +5,13 @@
       <div class="result-stats">
         <span class="stat"><strong class="tabular-nums">{{ result.totalDistanceKm.toFixed(1) }}</strong> km</span>
         <span class="stat"><strong class="tabular-nums">{{ result.samples.length }}</strong> points</span>
+        @if (precipitationAlert(); as alert) {
+          @if (alert.samplesAboveThreshold > 0) {
+            <span class="stat precipitation-alert">
+              &#9748; {{ alert.samplesAboveThreshold }} of {{ alert.samplesWithForecast }} points expect rain
+            </span>
+          }
+        }
       </div>
     </div>
 
