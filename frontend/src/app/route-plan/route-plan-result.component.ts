@@ -40,4 +40,10 @@ export class RoutePlanResultComponent {
   protected iconKind(weather: WeatherForecastDto) {
     return weatherIconKind(weather);
   }
+
+  /** Surfaces the secondary weather variables (not worth a dedicated grid column) as a
+   * hover tooltip on the forecast icon/temperature. */
+  protected extraDetails(weather: WeatherForecastDto): string {
+    return `Humidity: ${weather.relativeHumidityPercent.toFixed(0)}% · UV index: ${weather.uvIndex.toFixed(1)} · Gusts: ${weather.windGustsKmh.toFixed(1)} km/h`;
+  }
 }

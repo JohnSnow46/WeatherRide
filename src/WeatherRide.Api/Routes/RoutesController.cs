@@ -150,7 +150,10 @@ public sealed class RoutesController : ControllerBase
                             x.Weather.TemperatureCelsius,
                             x.Weather.WindSpeedKmh,
                             x.Weather.PrecipitationMm,
-                            x.Weather.WindDirectionDegrees)))
+                            x.Weather.WindDirectionDegrees,
+                            x.Weather.RelativeHumidityPercent,
+                            x.Weather.UvIndex,
+                            x.Weather.WindGustsKmh)))
                 .ToList(),
             track);
     }

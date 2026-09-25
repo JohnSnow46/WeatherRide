@@ -27,7 +27,10 @@ public static class OpenMeteoResponseMapper
         if (hourly.Temperature2m.Length != hourly.Time.Length
             || hourly.WindSpeed10m.Length != hourly.Time.Length
             || hourly.Precipitation.Length != hourly.Time.Length
-            || hourly.WindDirection10m.Length != hourly.Time.Length)
+            || hourly.WindDirection10m.Length != hourly.Time.Length
+            || hourly.RelativeHumidity2m.Length != hourly.Time.Length
+            || hourly.UvIndex.Length != hourly.Time.Length
+            || hourly.WindGusts10m.Length != hourly.Time.Length)
         {
             return null;
         }
@@ -55,7 +58,10 @@ public static class OpenMeteoResponseMapper
             hourly.Temperature2m[closestIndex],
             hourly.WindSpeed10m[closestIndex],
             hourly.Precipitation[closestIndex],
-            hourly.WindDirection10m[closestIndex]);
+            hourly.WindDirection10m[closestIndex],
+            hourly.RelativeHumidity2m[closestIndex],
+            hourly.UvIndex[closestIndex],
+            hourly.WindGusts10m[closestIndex]);
     }
 
     private static DateTime[] ParseTimes(string[] time) =>

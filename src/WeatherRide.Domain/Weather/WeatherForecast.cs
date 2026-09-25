@@ -7,4 +7,7 @@ public sealed record WeatherForecast(
     double TemperatureCelsius,
     double WindSpeedKmh,
     double PrecipitationMm,
-    double WindDirectionDegrees);
+    double WindDirectionDegrees,
+    double RelativeHumidityPercent,
+    double UvIndex,
+    double WindGustsKmh);

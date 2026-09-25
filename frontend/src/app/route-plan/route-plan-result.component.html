@@ -22,7 +22,7 @@
           <span class="distance tabular-nums">{{ sample.distanceFromStartKm.toFixed(1) }} km</span>
 
           @if (sample.weather; as weather) {
-            <span class="forecast">
+            <span class="forecast" [title]="extraDetails(weather)">
               <app-weather-glyph class="sample-icon" [kind]="iconKind(weather)" />
               <span class="temp tabular-nums">{{ weather.temperatureCelsius.toFixed(1) }}&deg;C</span>
             </span>

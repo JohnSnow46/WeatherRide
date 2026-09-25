@@ -75,6 +75,9 @@ public class PlanRouteEndpointTests
                 Assert.Equal(5 + i, body.Samples[i].Weather!.WindSpeedKmh, precision: 6);
                 Assert.Equal(0.1 * i, body.Samples[i].Weather!.PrecipitationMm, precision: 6);
                 Assert.Equal(90 + i, body.Samples[i].Weather!.WindDirectionDegrees, precision: 6);
+                Assert.Equal(50 + i, body.Samples[i].Weather!.RelativeHumidityPercent, precision: 6);
+                Assert.Equal(1 + i, body.Samples[i].Weather!.UvIndex, precision: 6);
+                Assert.Equal(8 + i, body.Samples[i].Weather!.WindGustsKmh, precision: 6);
             }
             else
             {
@@ -426,7 +429,7 @@ public class PlanRouteEndpointTests
             CancellationToken cancellationToken)
         {
             IReadOnlyList<WeatherForecast?> forecasts = samples
-                .Select((_, i) => i % 2 == 0 ? new WeatherForecast(10 + i, 5 + i, 0.1 * i, 90 + i) : null)
+                .Select((_, i) => i % 2 == 0 ? new WeatherForecast(10 + i, 5 + i, 0.1 * i, 90 + i, 50 + i, 1 + i, 8 + i) : null)
                 .ToList();
 
             return Task.FromResult(forecasts);

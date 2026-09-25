@@ -28,5 +28,14 @@ public sealed class OpenMeteoLocationResponse
 
         [JsonPropertyName("precipitation")]
         public double[] Precipitation { get; set; } = [];
+
+        [JsonPropertyName("relative_humidity_2m")]
+        public double[] RelativeHumidity2m { get; set; } = [];
+
+        [JsonPropertyName("uv_index")]
+        public double[] UvIndex { get; set; } = [];
+
+        [JsonPropertyName("wind_gusts_10m")]
+        public double[] WindGusts10m { get; set; } = [];
     }
 }

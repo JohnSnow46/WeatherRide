@@ -3,6 +3,9 @@ export interface WeatherForecastDto {
   windSpeedKmh: number;
   precipitationMm: number;
   windDirectionDegrees: number;
+  relativeHumidityPercent: number;
+  uvIndex: number;
+  windGustsKmh: number;
 }
 
 export interface RouteSampleDto {

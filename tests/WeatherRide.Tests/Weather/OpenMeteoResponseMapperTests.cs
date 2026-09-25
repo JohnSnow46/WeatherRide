@@ -18,6 +18,9 @@ public class OpenMeteoResponseMapperTests
             WindSpeed10m = [10.0, 12.5, 15.0],
             WindDirection10m = [180.0, 200.0, 220.0],
             Precipitation = [0.0, 0.2, 1.0],
+            RelativeHumidity2m = [60.0, 65.0, 70.0],
+            UvIndex = [1.0, 3.5, 5.0],
+            WindGusts10m = [15.0, 18.0, 22.0],
         },
     };
 
@@ -34,6 +37,9 @@ public class OpenMeteoResponseMapperTests
         Assert.Equal(12.5, forecast.WindSpeedKmh);
         Assert.Equal(0.2, forecast.PrecipitationMm);
         Assert.Equal(200.0, forecast.WindDirectionDegrees);
+        Assert.Equal(65.0, forecast.RelativeHumidityPercent);
+        Assert.Equal(3.5, forecast.UvIndex);
+        Assert.Equal(18.0, forecast.WindGustsKmh);
     }
 
     [Fact]
@@ -63,6 +69,18 @@ public class OpenMeteoResponseMapperTests
     {
         var location = BuildLocation();
         location.Hourly!.Temperature2m = [18.0, 20.5];
+        var etaAt = new DateTimeOffset(2026, 7, 30, 9, 10, 0, TimeSpan.Zero);
+
+        var forecast = OpenMeteoResponseMapper.Map(location, etaAt);
+
+        Assert.Null(forecast);
+    }
+
+    [Fact]
+    public void Map_NewWeatherVariableArrayLengthMismatch_ReturnsNullInsteadOfThrowing()
+    {
+        var location = BuildLocation();
+        location.Hourly!.UvIndex = [1.0];
         var etaAt = new DateTimeOffset(2026, 7, 30, 9, 10, 0, TimeSpan.Zero);
 
         var forecast = OpenMeteoResponseMapper.Map(location, etaAt);

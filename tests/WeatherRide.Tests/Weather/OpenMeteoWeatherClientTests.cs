@@ -11,14 +11,14 @@ public class OpenMeteoWeatherClientTests
 
     private const string OneLocationJson = """
         [
-          { "hourly": { "time": ["2026-07-30T09:00"], "temperature_2m": [20.0], "wind_speed_10m": [10.0], "wind_direction_10m": [180.0], "precipitation": [0.0] } }
+          { "hourly": { "time": ["2026-07-30T09:00"], "temperature_2m": [20.0], "wind_speed_10m": [10.0], "wind_direction_10m": [180.0], "precipitation": [0.0], "relative_humidity_2m": [55.0], "uv_index": [2.0], "wind_gusts_10m": [14.0] } }
         ]
         """;
 
     private const string TwoLocationsJson = """
         [
-          { "hourly": { "time": ["2026-07-30T09:00"], "temperature_2m": [20.0], "wind_speed_10m": [10.0], "wind_direction_10m": [180.0], "precipitation": [0.0] } },
-          { "hourly": { "time": ["2026-07-30T09:00"], "temperature_2m": [22.0], "wind_speed_10m": [12.0], "wind_direction_10m": [190.0], "precipitation": [0.5] } }
+          { "hourly": { "time": ["2026-07-30T09:00"], "temperature_2m": [20.0], "wind_speed_10m": [10.0], "wind_direction_10m": [180.0], "precipitation": [0.0], "relative_humidity_2m": [55.0], "uv_index": [2.0], "wind_gusts_10m": [14.0] } },
+          { "hourly": { "time": ["2026-07-30T09:00"], "temperature_2m": [22.0], "wind_speed_10m": [12.0], "wind_direction_10m": [190.0], "precipitation": [0.5], "relative_humidity_2m": [60.0], "uv_index": [4.0], "wind_gusts_10m": [16.0] } }
         ]
         """;
 
