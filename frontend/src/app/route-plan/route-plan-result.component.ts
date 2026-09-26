@@ -5,10 +5,11 @@ import { WeatherForecastDto } from './route-plan-api.model';
 import { weatherIconKind } from './weather-icon';
 import { WeatherGlyphComponent } from './weather-glyph.component';
 import { summarizePrecipitationAlert } from './route-interpolation';
+import { ElevationProfileComponent } from './elevation-profile.component';
 
 @Component({
   selector: 'app-route-plan-result',
-  imports: [WeatherGlyphComponent],
+  imports: [WeatherGlyphComponent, ElevationProfileComponent],
   templateUrl: './route-plan-result.component.html',
   styleUrl: './route-plan-result.component.scss'
 })

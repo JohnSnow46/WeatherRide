@@ -3,9 +3,9 @@ import { interpolatePosition, interpolateWeather, summarizePrecipitationAlert } 
 
 describe('interpolatePosition', () => {
   const track: TrackPointDto[] = [
-    { latitude: 0, longitude: 0, distanceFromStartKm: 0 },
-    { latitude: 10, longitude: 20, distanceFromStartKm: 10 },
-    { latitude: 20, longitude: 40, distanceFromStartKm: 20 }
+    { latitude: 0, longitude: 0, distanceFromStartKm: 0, elevation: null },
+    { latitude: 10, longitude: 20, distanceFromStartKm: 10, elevation: null },
+    { latitude: 20, longitude: 40, distanceFromStartKm: 20, elevation: null }
   ];
 
   it('interpolatePosition_DistanceExactlyOnTrackPoint_ReturnsExactCoordinates', () => {

@@ -20,6 +20,7 @@ export interface TrackPointDto {
   latitude: number;
   longitude: number;
   distanceFromStartKm: number;
+  elevation: number | null;
 }
 
 export interface PlanRouteResponse {
