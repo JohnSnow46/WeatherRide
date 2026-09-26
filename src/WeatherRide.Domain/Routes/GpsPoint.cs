@@ -1,10 +1,13 @@
 namespace WeatherRide.Domain.Routes;
 
 /// <summary>
-/// Współrzędne geograficzne punktu (bez wysokości — elevation z GPX na razie nieużywane
-/// w domenie, patrz ADR-0001 "Poza zakresem").
+/// Współrzędne geograficzne punktu, z opcjonalną wysokością n.p.m. (<see cref="Elevation"/>,
+/// metry) gdy pochodzi z GPX i plik ją zawierał. Wysokość jest czysto informacyjna — nie
+/// wpływa na dystans (<see cref="DistanceToKm"/> pozostaje płaską odległością Haversine) ani
+/// na ETA, które jest świadomie liczone przy stałym tempie bez korekty o przewyższenia
+/// (ADR-0001 "Poza zakresem").
 /// </summary>
-public readonly record struct GpsPoint(double Latitude, double Longitude)
+public readonly record struct GpsPoint(double Latitude, double Longitude, double? Elevation = null)
 {
     private const double EarthRadiusKm = 6371.0088;
 

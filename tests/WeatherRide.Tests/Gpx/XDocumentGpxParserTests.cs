@@ -199,6 +199,67 @@ public class XDocumentGpxParserTests
     }
 
     [Fact]
+    public async Task ParseAsync_TrkptWithEle_PopulatesElevation()
+    {
+        const string gpx = """
+            <?xml version="1.0" encoding="UTF-8"?>
+            <gpx version="1.1" xmlns="http://www.topografix.com/GPX/1/1">
+              <trk>
+                <trkseg>
+                  <trkpt lat="52.0" lon="21.0"><ele>120.5</ele></trkpt>
+                  <trkpt lat="52.1" lon="21.1"><ele>135</ele></trkpt>
+                </trkseg>
+              </trk>
+            </gpx>
+            """;
+
+        var route = await ParseAsync(gpx);
+
+        Assert.Equal(120.5, route.Points[0].Elevation);
+        Assert.Equal(135, route.Points[1].Elevation);
+    }
+
+    [Fact]
+    public async Task ParseAsync_TrkptWithoutEle_ElevationIsNull()
+    {
+        const string gpx = """
+            <?xml version="1.0" encoding="UTF-8"?>
+            <gpx version="1.1" xmlns="http://www.topografix.com/GPX/1/1">
+              <trk>
+                <trkseg>
+                  <trkpt lat="52.0" lon="21.0"></trkpt>
+                  <trkpt lat="52.1" lon="21.1"></trkpt>
+                </trkseg>
+              </trk>
+            </gpx>
+            """;
+
+        var route = await ParseAsync(gpx);
+
+        Assert.All(route.Points, p => Assert.Null(p.Elevation));
+    }
+
+    [Fact]
+    public async Task ParseAsync_TrkptWithNonNumericEle_ElevationIsNullNotAnError()
+    {
+        const string gpx = """
+            <?xml version="1.0" encoding="UTF-8"?>
+            <gpx version="1.1" xmlns="http://www.topografix.com/GPX/1/1">
+              <trk>
+                <trkseg>
+                  <trkpt lat="52.0" lon="21.0"><ele>not-a-number</ele></trkpt>
+                  <trkpt lat="52.1" lon="21.1"></trkpt>
+                </trkseg>
+              </trk>
+            </gpx>
+            """;
+
+        var route = await ParseAsync(gpx);
+
+        Assert.Null(route.Points[0].Elevation);
+    }
+
+    [Fact]
     public async Task ParseAsync_MalformedXml_ThrowsGpxParsingExceptionNotXmlException()
     {
         const string gpx = """

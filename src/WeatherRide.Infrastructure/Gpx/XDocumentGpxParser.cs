@@ -89,8 +89,31 @@ public sealed class XDocumentGpxParser : IGpxParser
                 $"Plik GPX zawiera punkt z nieprawidłowymi współrzędnymi (lat={latitude}, lon={longitude}).");
         }
 
-        point = new GpsPoint(latitude, longitude);
+        point = new GpsPoint(latitude, longitude, TryParseElevation(element));
         return true;
+    }
+
+    /// <summary>
+    /// Odczytuje opcjonalny element <c>&lt;ele&gt;</c> (wysokość n.p.m. w metrach). Brak
+    /// elementu albo nieparsowalna/nieskończona wartość → <c>null</c>, nigdy błąd — wysokość
+    /// jest czysto informacyjna, nie powinna blokować wczytania trasy.
+    /// </summary>
+    private static double? TryParseElevation(XElement element)
+    {
+        var elevationElement = element.Element(element.Name.Namespace + "ele");
+
+        if (elevationElement is null)
+        {
+            return null;
+        }
+
+        if (!double.TryParse(elevationElement.Value, NumberStyles.Float, CultureInfo.InvariantCulture, out var elevation)
+            || !double.IsFinite(elevation))
+        {
+            return null;
+        }
+
+        return elevation;
     }
 
     private static Route BuildRoute(List<GpsPoint> points)

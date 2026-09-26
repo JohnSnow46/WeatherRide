@@ -133,7 +133,7 @@ public sealed class RoutesController : ControllerBase
     private static PlanRouteResponse ToResponse(TripPlanResult result)
     {
         var track = result.Route.Points
-            .Select((point, i) => new TrackPointResponse(point.Latitude, point.Longitude, result.Route.CumulativeDistancesKm[i]))
+            .Select((point, i) => new TrackPointResponse(point.Latitude, point.Longitude, result.Route.CumulativeDistancesKm[i], point.Elevation))
             .ToList();
 
         return new PlanRouteResponse(
