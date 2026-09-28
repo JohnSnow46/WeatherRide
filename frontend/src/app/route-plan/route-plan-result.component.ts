@@ -6,10 +6,11 @@ import { weatherIconKind } from './weather-icon';
 import { WeatherGlyphComponent } from './weather-glyph.component';
 import { summarizePrecipitationAlert } from './route-interpolation';
 import { ElevationProfileComponent } from './elevation-profile.component';
+import { DepartureShiftComponent } from './departure-shift.component';
 
 @Component({
   selector: 'app-route-plan-result',
-  imports: [WeatherGlyphComponent, ElevationProfileComponent],
+  imports: [WeatherGlyphComponent, ElevationProfileComponent, DepartureShiftComponent],
   templateUrl: './route-plan-result.component.html',
   styleUrl: './route-plan-result.component.scss'
 })

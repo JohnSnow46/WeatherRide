@@ -1,0 +1,24 @@
+<div class="departure-shift">
+  <span class="label">Shift departure:</span>
+  <div class="shift-buttons">
+    @for (step of steps; track step) {
+      <button type="button" (click)="shift(step)" [disabled]="isShifting()">
+        {{ step > 0 ? '+' : '' }}{{ step }}h
+      </button>
+    }
+    @if (routePlanStateService.departureShiftHours() !== 0) {
+      <button type="button" class="reset" (click)="reset()" [disabled]="isShifting()">Reset</button>
+    }
+  </div>
+
+  @if (routePlanStateService.departureShiftHours() !== 0) {
+    <span class="current-shift">
+      ({{ routePlanStateService.departureShiftHours() > 0 ? '+' : '' }}{{ routePlanStateService.departureShiftHours() }}h
+      from original)
+    </span>
+  }
+
+  @if (error(); as e) {
+    <span class="shift-error">{{ e }}</span>
+  }
+</div>

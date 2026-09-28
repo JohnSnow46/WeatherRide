@@ -42,3 +42,21 @@ export interface PlanDirectRouteRequestDto {
   plannedDurationHours: number | null;
   sampleCount: number;
 }
+
+export interface ReforecastSampleRequestDto {
+  latitude: number;
+  longitude: number;
+  distanceFromStartKm: number;
+}
+
+export interface ReforecastRouteRequestDto {
+  samples: ReforecastSampleRequestDto[];
+  totalDistanceKm: number;
+  departureAt: string;
+  averageSpeedKmh: number | null;
+  plannedDurationHours: number | null;
+}
+
+export interface ReforecastRouteResponse {
+  samples: RouteSampleDto[];
+}

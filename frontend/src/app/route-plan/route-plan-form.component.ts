@@ -153,6 +153,10 @@ export class RoutePlanFormComponent {
       next: (response) => {
         this.routePlanStateService.result.set(response);
         this.routePlanStateService.selectedDistanceKm.set(0);
+        this.routePlanStateService.lastDepartureAtIso.set(departureAtIso);
+        this.routePlanStateService.lastAverageSpeedKmh.set(averageSpeedKmh);
+        this.routePlanStateService.lastPlannedDurationHours.set(plannedDurationHours);
+        this.routePlanStateService.departureShiftHours.set(0);
         this.routePlanStateService.isLoading.set(false);
       },
       error: (err) => {

@@ -1,0 +1,48 @@
+.departure-shift {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-2, 0.5rem);
+  margin-bottom: var(--space-4);
+  font-size: 0.8125rem;
+}
+
+.label {
+  color: var(--color-text-muted);
+}
+
+.shift-buttons {
+  display: flex;
+  gap: 0.375rem;
+}
+
+.shift-buttons button {
+  padding: 0.25rem 0.625rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md, 6px);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: 0.8125rem;
+  cursor: pointer;
+}
+
+.shift-buttons button:hover:not(:disabled) {
+  background: var(--color-surface-hover, var(--color-border));
+}
+
+.shift-buttons button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.shift-buttons button.reset {
+  color: var(--color-text-muted);
+}
+
+.current-shift {
+  color: var(--color-text-muted);
+}
+
+.shift-error {
+  color: var(--color-accent-danger);
+}
