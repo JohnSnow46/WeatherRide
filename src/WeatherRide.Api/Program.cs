@@ -13,6 +13,7 @@ builder.Services.AddOpenApi();
 builder.Services.AddInfrastructure();
 builder.Services.AddScoped<PlanTripUseCase>();
 builder.Services.AddScoped<PlanDirectTripUseCase>();
+builder.Services.AddScoped<ReforecastTripUseCase>();
 
 var app = builder.Build();
 

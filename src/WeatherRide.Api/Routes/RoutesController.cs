@@ -12,16 +12,22 @@ public sealed class RoutesController : ControllerBase
     private const string SpeedXorDurationDetail = "Podaj albo średnią prędkość, albo czas trasy, nie oba.";
     private const string InvalidCoordinatesDetail = "Współrzędne punktu muszą mieścić się w zakresie: szerokość -90..90, długość -180..180.";
     private const string DepartureAtRequiredDetail = "DepartureAt jest wymagane.";
+    private const string SamplesRequiredDetail = "Samples są wymagane i nie mogą być puste.";
     private const long MaxGpxFileSizeBytes = 5 * 1024 * 1024;
     private const string GpxFileTooLargeDetail = "Plik GPX nie może przekraczać 5 MB.";
 
     private readonly PlanTripUseCase _planTripUseCase;
     private readonly PlanDirectTripUseCase _planDirectTripUseCase;
+    private readonly ReforecastTripUseCase _reforecastTripUseCase;
 
-    public RoutesController(PlanTripUseCase planTripUseCase, PlanDirectTripUseCase planDirectTripUseCase)
+    public RoutesController(
+        PlanTripUseCase planTripUseCase,
+        PlanDirectTripUseCase planDirectTripUseCase,
+        ReforecastTripUseCase reforecastTripUseCase)
     {
         _planTripUseCase = planTripUseCase;
         _planDirectTripUseCase = planDirectTripUseCase;
+        _reforecastTripUseCase = reforecastTripUseCase;
     }
 
     /// <summary>
@@ -125,6 +131,78 @@ public sealed class RoutesController : ControllerBase
             ct);
 
         return Ok(ToResponse(result));
+    }
+
+    /// <summary>
+    /// Przyjmuje już wyliczone próbki trasy (z <c>/plan</c> albo <c>/plan-direct</c>) + nowe
+    /// parametry wyjazdu i przelicza ETA/pogodę bez ponownego próbkowania trasy — pozwala
+    /// "przesunąć" godzinę wyjazdu bez ponownego uploadu GPX.
+    /// </summary>
+    [HttpPost("reforecast")]
+    public async Task<ActionResult<ReforecastRouteResponse>> Reforecast([FromBody] ReforecastRouteRequest request, CancellationToken ct)
+    {
+        if (request.Samples is null || request.Samples.Count == 0)
+        {
+            return Problem(
+                title: InvalidInputTitle,
+                detail: SamplesRequiredDetail,
+                statusCode: StatusCodes.Status400BadRequest);
+        }
+
+        if (request.Samples.Any(s => !GpsPoint.IsValid(s.Latitude, s.Longitude)))
+        {
+            return Problem(
+                title: InvalidInputTitle,
+                detail: InvalidCoordinatesDetail,
+                statusCode: StatusCodes.Status400BadRequest);
+        }
+
+        if (request.DepartureAt == default)
+        {
+            return Problem(
+                title: InvalidInputTitle,
+                detail: DepartureAtRequiredDetail,
+                statusCode: StatusCodes.Status400BadRequest);
+        }
+
+        if (request.AverageSpeedKmh.HasValue == request.PlannedDurationHours.HasValue)
+        {
+            return Problem(
+                title: InvalidInputTitle,
+                detail: SpeedXorDurationDetail,
+                statusCode: StatusCodes.Status400BadRequest);
+        }
+
+        var existingSamples = request.Samples
+            .Select(s => new ReforecastSample(new GpsPoint(s.Latitude, s.Longitude), s.DistanceFromStartKm))
+            .ToList();
+
+        var result = await _reforecastTripUseCase.ReforecastAsync(
+            existingSamples,
+            request.TotalDistanceKm,
+            request.DepartureAt,
+            request.AverageSpeedKmh,
+            request.PlannedDurationHours,
+            ct);
+
+        return Ok(new ReforecastRouteResponse(
+            result
+                .Select(x => new RouteSampleResponse(
+                    x.Sample.Position.Latitude,
+                    x.Sample.Position.Longitude,
+                    x.Sample.DistanceFromStartKm,
+                    x.Sample.EtaAt,
+                    x.Weather is null
+                        ? null
+                        : new WeatherForecastResponse(
+                            x.Weather.TemperatureCelsius,
+                            x.Weather.WindSpeedKmh,
+                            x.Weather.PrecipitationMm,
+                            x.Weather.WindDirectionDegrees,
+                            x.Weather.RelativeHumidityPercent,
+                            x.Weather.UvIndex,
+                            x.Weather.WindGustsKmh)))
+                .ToList()));
     }
 
     private static bool IsValidCoordinate(GpsPoint point) =>

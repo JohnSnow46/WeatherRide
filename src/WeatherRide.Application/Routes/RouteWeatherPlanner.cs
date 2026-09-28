@@ -26,4 +26,32 @@ public static class RouteWeatherPlanner
 
         return new TripPlanResult(route, samples.Select((sample, i) => new RouteSampleWeather(sample, forecasts[i])).ToList());
     }
+
+    /// <summary>
+    /// Przelicza ETA i pobiera pogodę na nowo dla już wyliczonych próbek trasy (pozycja +
+    /// dystans od startu), bez ponownego próbkowania — czyta wprost istniejący plan podróży
+    /// od <paramref name="totalDistanceKm"/>, patrz roadmap "przesunięcie ETA".
+    /// </summary>
+    public static async Task<IReadOnlyList<RouteSampleWeather>> ReforecastAsync(
+        IWeatherClient weatherClient,
+        IReadOnlyList<ReforecastSample> existingSamples,
+        double totalDistanceKm,
+        DateTimeOffset departureAt,
+        double? averageSpeedKmh,
+        double? plannedDurationHours,
+        CancellationToken cancellationToken)
+    {
+        var tripPlan = TripPlan.Create(departureAt, totalDistanceKm, averageSpeedKmh, plannedDurationHours);
+
+        var samples = existingSamples
+            .Select(s => new RouteSample(
+                s.Position,
+                s.DistanceFromStartKm,
+                tripPlan.DepartureAt + TimeSpan.FromHours(s.DistanceFromStartKm / tripPlan.AverageSpeedKmh)))
+            .ToList();
+
+        var forecasts = await weatherClient.GetForecastsAsync(samples, cancellationToken);
+
+        return samples.Select((sample, i) => new RouteSampleWeather(sample, forecasts[i])).ToList();
+    }
 }
