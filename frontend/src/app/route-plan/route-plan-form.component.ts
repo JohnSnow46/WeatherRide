@@ -157,6 +157,7 @@ export class RoutePlanFormComponent {
         this.routePlanStateService.lastAverageSpeedKmh.set(averageSpeedKmh);
         this.routePlanStateService.lastPlannedDurationHours.set(plannedDurationHours);
         this.routePlanStateService.departureShiftHours.set(0);
+        this.routePlanStateService.comparisonVariants.set([]);
         this.routePlanStateService.isLoading.set(false);
       },
       error: (err) => {

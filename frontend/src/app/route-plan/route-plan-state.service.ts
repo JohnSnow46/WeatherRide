@@ -1,6 +1,7 @@
 import { Injectable, signal } from '@angular/core';
 
 import { PlanRouteResponse } from './route-plan-api.model';
+import { RouteVariant } from './variant-comparison';
 
 @Injectable({ providedIn: 'root' })
 export class RoutePlanStateService {
@@ -15,4 +16,9 @@ export class RoutePlanStateService {
   lastAverageSpeedKmh = signal<number | null>(null);
   lastPlannedDurationHours = signal<number | null>(null);
   departureShiftHours = signal(0);
+
+  /** Snapshots of the result at different departure-time shifts, kept in memory only for
+   * side-by-side comparison — cleared whenever a brand new route is planned (see
+   * route-plan-form's onSubmit), never persisted across visits. */
+  comparisonVariants = signal<RouteVariant[]>([]);
 }

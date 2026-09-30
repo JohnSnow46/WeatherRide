@@ -1,0 +1,39 @@
+<div class="variant-comparison">
+  <div class="header-row">
+    <span class="label">Compare departure variants:</span>
+    <button type="button" (click)="addCurrent()" [disabled]="!canAddCurrent()">Add current as variant</button>
+  </div>
+
+  @if (summaries().length > 0) {
+    <table class="variant-table">
+      <thead>
+        <tr>
+          <th>Variant</th>
+          <th>Avg temp</th>
+          <th>Max precip.</th>
+          <th>Points w/ rain</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (summary of summaries(); track summary.departureShiftHours) {
+          <tr>
+            <td>{{ summary.label }}</td>
+            <td class="tabular-nums">
+              {{ summary.avgTemperatureCelsius !== null ? summary.avgTemperatureCelsius.toFixed(1) + '°C' : '—' }}
+            </td>
+            <td class="tabular-nums">
+              {{ summary.maxPrecipitationMm !== null ? summary.maxPrecipitationMm.toFixed(1) + ' mm' : '—' }}
+            </td>
+            <td class="tabular-nums">{{ summary.samplesWithRain }} / {{ summary.samplesWithForecast }}</td>
+            <td>
+              <button type="button" class="remove" (click)="remove(summary.departureShiftHours)">Remove</button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  } @else {
+    <p class="hint">Add the current result (and a shifted variant, via "Shift departure" above) to compare them side by side.</p>
+  }
+</div>
