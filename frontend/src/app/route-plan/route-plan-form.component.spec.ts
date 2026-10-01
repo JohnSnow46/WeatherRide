@@ -9,10 +9,48 @@ import { PlanRouteResponse } from './route-plan-api.model';
 
 describe('RoutePlanFormComponent', () => {
   beforeEach(async () => {
+    localStorage.clear();
     await TestBed.configureTestingModule({
       imports: [RoutePlanFormComponent],
       providers: [provideHttpClient()]
     }).compileComponents();
+  });
+
+  afterEach(() => localStorage.clear());
+
+  it('restores the last saved draft on construction', () => {
+    localStorage.setItem(
+      'weatherride.routePlanDraft',
+      JSON.stringify({
+        routeMode: 'direct',
+        departureAt: '2026-08-01T10:00',
+        speedMode: 'speed',
+        averageSpeedKmh: 25,
+        plannedDurationHours: null,
+        sampleCount: 30,
+        pointALatitude: 52.0,
+        pointALongitude: 21.0,
+        pointBLatitude: 52.5,
+        pointBLongitude: 21.5
+      })
+    );
+
+    const fixture = TestBed.createComponent(RoutePlanFormComponent);
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.form.value.routeMode).toBe('direct');
+    expect(fixture.componentInstance.form.value.averageSpeedKmh).toBe(25);
+    expect(fixture.componentInstance.form.value.pointALatitude).toBe(52.0);
+  });
+
+  it('saves the current form values to localStorage as they change', () => {
+    const fixture = TestBed.createComponent(RoutePlanFormComponent);
+    fixture.detectChanges();
+
+    fixture.componentInstance.form.patchValue({ averageSpeedKmh: 18 });
+
+    const saved = JSON.parse(localStorage.getItem('weatherride.routePlanDraft')!);
+    expect(saved.averageSpeedKmh).toBe(18);
   });
 
   it('disables the submit button when no GPX file is selected', () => {

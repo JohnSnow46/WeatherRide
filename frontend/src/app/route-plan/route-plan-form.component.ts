@@ -3,6 +3,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { RoutePlanApiService } from './route-plan-api.service';
+import { loadRoutePlanDraft, saveRoutePlanDraft } from './route-plan-draft-storage';
 import { RoutePlanStateService } from './route-plan-state.service';
 
 @Component({
@@ -35,6 +36,28 @@ export class RoutePlanFormComponent {
   });
 
   private readonly formValue = toSignal(this.form.valueChanges, { initialValue: this.form.value });
+
+  constructor() {
+    const draft = loadRoutePlanDraft();
+    if (draft) {
+      this.form.patchValue(draft);
+    }
+
+    this.form.valueChanges.subscribe((value) => {
+      saveRoutePlanDraft({
+        routeMode: (value.routeMode as 'gpx' | 'direct') ?? 'gpx',
+        departureAt: value.departureAt ?? '',
+        speedMode: (value.speedMode as 'speed' | 'duration') ?? 'speed',
+        averageSpeedKmh: value.averageSpeedKmh ?? null,
+        plannedDurationHours: value.plannedDurationHours ?? null,
+        sampleCount: value.sampleCount ?? 20,
+        pointALatitude: value.pointALatitude ?? null,
+        pointALongitude: value.pointALongitude ?? null,
+        pointBLatitude: value.pointBLatitude ?? null,
+        pointBLongitude: value.pointBLongitude ?? null
+      });
+    });
+  }
 
   readonly routeMode = computed(() => this.formValue().routeMode ?? 'gpx');
   readonly speedMode = computed(() => this.formValue().speedMode ?? 'speed');
