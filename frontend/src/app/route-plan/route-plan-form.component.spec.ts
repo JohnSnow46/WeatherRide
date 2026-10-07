@@ -114,6 +114,16 @@ describe('RoutePlanFormComponent', () => {
     expect(fixture.componentInstance.canSubmit()).toBeFalse();
   });
 
+  it('setTravelMode fills in the average speed and switches to speed mode', () => {
+    const fixture = TestBed.createComponent(RoutePlanFormComponent);
+    fixture.componentInstance.form.patchValue({ speedMode: 'duration' });
+
+    fixture.componentInstance.setTravelMode(18);
+
+    expect(fixture.componentInstance.form.value.speedMode).toBe('speed');
+    expect(fixture.componentInstance.form.value.averageSpeedKmh).toBe(18);
+  });
+
   it('switches to direct point A/B mode and disables submit until both points are valid', () => {
     const fixture = TestBed.createComponent(RoutePlanFormComponent);
     fixture.componentInstance.form.patchValue({

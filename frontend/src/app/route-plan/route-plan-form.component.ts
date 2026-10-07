@@ -6,6 +6,11 @@ import { RoutePlanApiService } from './route-plan-api.service';
 import { loadRoutePlanDraft, saveRoutePlanDraft } from './route-plan-draft-storage';
 import { RoutePlanStateService } from './route-plan-state.service';
 
+interface TravelMode {
+  readonly label: string;
+  readonly speedKmh: number;
+}
+
 @Component({
   selector: 'app-route-plan-form',
   imports: [ReactiveFormsModule],
@@ -14,6 +19,12 @@ import { RoutePlanStateService } from './route-plan-state.service';
 })
 export class RoutePlanFormComponent {
   private static readonly MAX_GPX_FILE_SIZE_BYTES = 5 * 1024 * 1024;
+
+  readonly travelModes: readonly TravelMode[] = [
+    { label: 'Walking', speedKmh: 5 },
+    { label: 'Cycling', speedKmh: 18 },
+    { label: 'Driving', speedKmh: 50 }
+  ];
 
   private readonly fb = inject(FormBuilder);
   private readonly routePlanApiService = inject(RoutePlanApiService);
@@ -100,6 +111,10 @@ export class RoutePlanFormComponent {
       value.pointALongitude === value.pointBLongitude
     );
   });
+
+  setTravelMode(speedKmh: number): void {
+    this.form.patchValue({ speedMode: 'speed', averageSpeedKmh: speedKmh });
+  }
 
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
