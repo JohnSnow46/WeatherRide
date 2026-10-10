@@ -50,5 +50,27 @@ public readonly record struct GpsPoint(double Latitude, double Longitude, double
         return EarthRadiusKm * c;
     }
 
+    /// <summary>
+    /// Kierunek jazdy (azymut, 0-360°, 0 = północ) z tego punktu w stronę <paramref name="other"/>,
+    /// po wielkim kole. Używany do kategoryzacji wiatru względem kierunku jazdy (roadmap #10) —
+    /// osobno od <see cref="DistanceToKm"/>, które liczy tylko odległość, nie kierunek.
+    /// </summary>
+    public double BearingToDegrees(GpsPoint other)
+    {
+        var lat1Rad = DegreesToRadians(Latitude);
+        var lat2Rad = DegreesToRadians(other.Latitude);
+        var deltaLonRad = DegreesToRadians(other.Longitude - Longitude);
+
+        var y = Math.Sin(deltaLonRad) * Math.Cos(lat2Rad);
+        var x = Math.Cos(lat1Rad) * Math.Sin(lat2Rad) - Math.Sin(lat1Rad) * Math.Cos(lat2Rad) * Math.Cos(deltaLonRad);
+
+        var bearingDegrees = RadiansToDegrees(Math.Atan2(y, x));
+
+        // Atan2 zwraca -180..180 — znormalizowane do 0..360, zgodnego z konwencją azymutu.
+        return (bearingDegrees + 360.0) % 360.0;
+    }
+
     private static double DegreesToRadians(double degrees) => degrees * Math.PI / 180.0;
+
+    private static double RadiansToDegrees(double radians) => radians * 180.0 / Math.PI;
 }

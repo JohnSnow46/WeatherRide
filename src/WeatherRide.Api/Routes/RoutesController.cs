@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using WeatherRide.Application.Routes;
 using WeatherRide.Domain.Routes;
+using WeatherRide.Domain.Weather;
 
 namespace WeatherRide.Api.Routes;
 
@@ -185,24 +186,7 @@ public sealed class RoutesController : ControllerBase
             request.PlannedDurationHours,
             ct);
 
-        return Ok(new ReforecastRouteResponse(
-            result
-                .Select(x => new RouteSampleResponse(
-                    x.Sample.Position.Latitude,
-                    x.Sample.Position.Longitude,
-                    x.Sample.DistanceFromStartKm,
-                    x.Sample.EtaAt,
-                    x.Weather is null
-                        ? null
-                        : new WeatherForecastResponse(
-                            x.Weather.TemperatureCelsius,
-                            x.Weather.WindSpeedKmh,
-                            x.Weather.PrecipitationMm,
-                            x.Weather.WindDirectionDegrees,
-                            x.Weather.RelativeHumidityPercent,
-                            x.Weather.UvIndex,
-                            x.Weather.WindGustsKmh)))
-                .ToList()));
+        return Ok(new ReforecastRouteResponse(MapSamples(result).ToList()));
     }
 
     private static bool IsValidCoordinate(GpsPoint point) =>
@@ -214,25 +198,55 @@ public sealed class RoutesController : ControllerBase
             .Select((point, i) => new TrackPointResponse(point.Latitude, point.Longitude, result.Route.CumulativeDistancesKm[i], point.Elevation))
             .ToList();
 
-        return new PlanRouteResponse(
-            result.Route.TotalDistanceKm,
-            result.Samples
-                .Select(x => new RouteSampleResponse(
-                    x.Sample.Position.Latitude,
-                    x.Sample.Position.Longitude,
-                    x.Sample.DistanceFromStartKm,
-                    x.Sample.EtaAt,
-                    x.Weather is null
-                        ? null
-                        : new WeatherForecastResponse(
-                            x.Weather.TemperatureCelsius,
-                            x.Weather.WindSpeedKmh,
-                            x.Weather.PrecipitationMm,
-                            x.Weather.WindDirectionDegrees,
-                            x.Weather.RelativeHumidityPercent,
-                            x.Weather.UvIndex,
-                            x.Weather.WindGustsKmh)))
-                .ToList(),
-            track);
+        return new PlanRouteResponse(result.Route.TotalDistanceKm, MapSamples(result.Samples).ToList(), track);
+    }
+
+    /// <summary>
+    /// Mapuje próbki trasy + pogodę na <see cref="RouteSampleResponse"/>, dopisując kierunek
+    /// wiatru względem jazdy (roadmap #10). Kierunek jazdy w punkcie <c>i</c> to azymut do
+    /// punktu <c>i+1</c> (albo, dla ostatniej próbki, azymut od punktu <c>i-1</c>) — współdzielone
+    /// między <c>/plan</c>, <c>/plan-direct</c> i <c>/reforecast</c>, stąd jedna wspólna metoda
+    /// zamiast powtarzania projekcji w każdym handlerze.
+    /// </summary>
+    private static IReadOnlyList<RouteSampleResponse> MapSamples(IReadOnlyList<RouteSampleWeather> samples)
+    {
+        var responses = new List<RouteSampleResponse>(samples.Count);
+
+        for (var i = 0; i < samples.Count; i++)
+        {
+            var position = samples[i].Sample.Position;
+
+            double? travelBearingDegrees = i + 1 < samples.Count
+                ? position.BearingToDegrees(samples[i + 1].Sample.Position)
+                : i > 0
+                    ? samples[i - 1].Sample.Position.BearingToDegrees(position)
+                    : null;
+
+            var weather = samples[i].Weather;
+
+            var windRelativeDirection = weather is not null && travelBearingDegrees is not null
+                ? WindRelativeDirectionCalculator.Categorize(
+                    travelBearingDegrees.Value, weather.WindDirectionDegrees, weather.WindSpeedKmh, weather.WindGustsKmh)
+                : null;
+
+            responses.Add(new RouteSampleResponse(
+                position.Latitude,
+                position.Longitude,
+                samples[i].Sample.DistanceFromStartKm,
+                samples[i].Sample.EtaAt,
+                weather is null
+                    ? null
+                    : new WeatherForecastResponse(
+                        weather.TemperatureCelsius,
+                        weather.WindSpeedKmh,
+                        weather.PrecipitationMm,
+                        weather.WindDirectionDegrees,
+                        weather.RelativeHumidityPercent,
+                        weather.UvIndex,
+                        weather.WindGustsKmh),
+                windRelativeDirection?.ToString()));
+        }
+
+        return responses;
     }
 }

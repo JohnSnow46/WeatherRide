@@ -71,6 +71,34 @@ public class GpsPointTests
     }
 
     [Theory]
+    [InlineData(0, 0, 1, 0, 0)] // prosto na północ
+    [InlineData(0, 0, 0, 1, 90)] // prosto na wschód
+    [InlineData(1, 0, 0, 0, 180)] // prosto na południe
+    [InlineData(0, 1, 0, 0, 270)] // prosto na zachód
+    public void BearingToDegrees_CardinalDirections_ReturnsExpectedAzimuth(
+        double lat1, double lon1, double lat2, double lon2, double expectedBearingDegrees)
+    {
+        var start = new GpsPoint(lat1, lon1);
+        var end = new GpsPoint(lat2, lon2);
+
+        var bearingDegrees = start.BearingToDegrees(end);
+
+        Assert.Equal(expectedBearingDegrees, bearingDegrees, precision: 3);
+    }
+
+    [Fact]
+    public void BearingToDegrees_SamePoint_ReturnsZero()
+    {
+        // Atan2(0, 0) = 0 -- bez specjalnego przypadku, więc ten test pilnuje, że pozostaje
+        // 0 (a nie NaN) również po normalizacji do 0..360.
+        var point = new GpsPoint(52.2297, 21.0122);
+
+        var bearingDegrees = point.BearingToDegrees(point);
+
+        Assert.Equal(0.0, bearingDegrees, precision: 9);
+    }
+
+    [Theory]
     [InlineData(90.0000001, 0)]
     [InlineData(-90.0000001, 0)]
     [InlineData(0, 180.0000001)]
