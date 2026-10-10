@@ -1,0 +1,9 @@
+<div class="best-window">
+  <button type="button" (click)="findBest()" [disabled]="isSearching()">
+    {{ isSearching() ? 'Searching...' : 'Find best hour (±6h)' }}
+  </button>
+
+  @if (error(); as e) {
+    <span class="best-window-error">{{ e }}</span>
+  }
+</div>

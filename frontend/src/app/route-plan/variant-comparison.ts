@@ -39,3 +39,29 @@ export function summarizeVariant(variant: RouteVariant): VariantSummary {
 export function variantLabel(departureShiftHours: number): string {
   return departureShiftHours === 0 ? 'Original' : `${departureShiftHours > 0 ? '+' : ''}${departureShiftHours}h`;
 }
+
+/** Picks the variant with the least rain, for the "find best departure hour" window
+ * search (roadmap #12). Ties break in order: fewer rain samples, then more samples with
+ * any forecast at all (a shift outside Open-Meteo's horizon has no data to judge by, so
+ * it never beats one that does), then lower peak precipitation, then the smallest shift
+ * from the original departure time (least disruptive). */
+export function pickBestVariant(variants: RouteVariant[]): RouteVariant {
+  return variants
+    .map(variant => ({ variant, summary: summarizeVariant(variant) }))
+    .reduce((best, current) => (isBetterVariant(current.summary, best.summary) ? current : best)).variant;
+}
+
+function isBetterVariant(candidate: VariantSummary, best: VariantSummary): boolean {
+  if (candidate.samplesWithRain !== best.samplesWithRain) {
+    return candidate.samplesWithRain < best.samplesWithRain;
+  }
+  if (candidate.samplesWithForecast !== best.samplesWithForecast) {
+    return candidate.samplesWithForecast > best.samplesWithForecast;
+  }
+  const candidatePrecip = candidate.maxPrecipitationMm ?? Infinity;
+  const bestPrecip = best.maxPrecipitationMm ?? Infinity;
+  if (candidatePrecip !== bestPrecip) {
+    return candidatePrecip < bestPrecip;
+  }
+  return Math.abs(candidate.departureShiftHours) < Math.abs(best.departureShiftHours);
+}

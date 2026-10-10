@@ -1,5 +1,5 @@
 import { RouteSampleDto } from './route-plan-api.model';
-import { RouteVariant, summarizeVariant, variantLabel } from './variant-comparison';
+import { RouteVariant, pickBestVariant, summarizeVariant, variantLabel } from './variant-comparison';
 
 function sample(temperatureCelsius: number, precipitationMm: number): RouteSampleDto {
   return {
@@ -76,5 +76,39 @@ describe('variantLabel', () => {
   it('ReturnsSignedHours_ForNonZeroShift', () => {
     expect(variantLabel(2)).toBe('+2h');
     expect(variantLabel(-3)).toBe('-3h');
+  });
+});
+
+describe('pickBestVariant', () => {
+  function variant(departureShiftHours: number, samples: RouteSampleDto[]): RouteVariant {
+    return { label: variantLabel(departureShiftHours), departureShiftHours, samples };
+  }
+
+  it('PrefersFewerRainSamples_OverAnyOtherFactor', () => {
+    const dry = variant(2, [sample(5, 0), sample(5, 0)]);
+    const rainy = variant(0, [sample(20, 10), sample(20, 0)]);
+
+    expect(pickBestVariant([rainy, dry])).toBe(dry);
+  });
+
+  it('PrefersVariantWithForecastData_WhenRainCountsTie', () => {
+    const noData = variant(5, [sampleWithoutForecast()]);
+    const withData = variant(1, [sample(10, 0)]);
+
+    expect(pickBestVariant([noData, withData])).toBe(withData);
+  });
+
+  it('PrefersLowerPeakPrecipitation_WhenRainCountsAndForecastCoverageTie', () => {
+    const lightRain = variant(3, [sample(10, 1)]);
+    const heavyRain = variant(-3, [sample(10, 8)]);
+
+    expect(pickBestVariant([heavyRain, lightRain])).toBe(lightRain);
+  });
+
+  it('PrefersSmallestShift_WhenEverythingElseTies', () => {
+    const closer = variant(1, [sample(10, 0)]);
+    const farther = variant(-4, [sample(10, 0)]);
+
+    expect(pickBestVariant([farther, closer])).toBe(closer);
   });
 });

@@ -8,10 +8,17 @@ import { summarizePrecipitationAlert } from './route-interpolation';
 import { ElevationProfileComponent } from './elevation-profile.component';
 import { DepartureShiftComponent } from './departure-shift.component';
 import { VariantComparisonComponent } from './variant-comparison.component';
+import { BestWindowComponent } from './best-window.component';
 
 @Component({
   selector: 'app-route-plan-result',
-  imports: [WeatherGlyphComponent, ElevationProfileComponent, DepartureShiftComponent, VariantComparisonComponent],
+  imports: [
+    WeatherGlyphComponent,
+    ElevationProfileComponent,
+    DepartureShiftComponent,
+    BestWindowComponent,
+    VariantComparisonComponent
+  ],
   templateUrl: './route-plan-result.component.html',
   styleUrl: './route-plan-result.component.scss'
 })
