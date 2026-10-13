@@ -11,8 +11,8 @@ function sampleResult(): PlanRouteResponse {
   return {
     totalDistanceKm: 30,
     samples: [
-      { latitude: 52.0, longitude: 21.0, distanceFromStartKm: 0, etaAt: '2026-08-01T10:00:00', weather: null },
-      { latitude: 52.1, longitude: 21.1, distanceFromStartKm: 30, etaAt: '2026-08-01T11:00:00', weather: null }
+      { latitude: 52.0, longitude: 21.0, distanceFromStartKm: 0, etaAt: '2026-08-01T10:00:00', weather: null, windRelativeDirection: null },
+      { latitude: 52.1, longitude: 21.1, distanceFromStartKm: 30, etaAt: '2026-08-01T11:00:00', weather: null, windRelativeDirection: null }
     ],
     track: []
   };
@@ -48,8 +48,8 @@ describe('DepartureShiftComponent', () => {
 
     const response: ReforecastRouteResponse = {
       samples: [
-        { latitude: 52.0, longitude: 21.0, distanceFromStartKm: 0, etaAt: '2026-08-01T12:00:00', weather: null },
-        { latitude: 52.1, longitude: 21.1, distanceFromStartKm: 30, etaAt: '2026-08-01T13:00:00', weather: null }
+        { latitude: 52.0, longitude: 21.0, distanceFromStartKm: 0, etaAt: '2026-08-01T12:00:00', weather: null, windRelativeDirection: null },
+        { latitude: 52.1, longitude: 21.1, distanceFromStartKm: 30, etaAt: '2026-08-01T13:00:00', weather: null, windRelativeDirection: null }
       ]
     };
     const spy = spyOn(apiService, 'reforecastRoute').and.returnValue(of(response));

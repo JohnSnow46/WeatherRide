@@ -11,8 +11,8 @@ function sampleResult(): PlanRouteResponse {
   return {
     totalDistanceKm: 30,
     samples: [
-      { latitude: 52.0, longitude: 21.0, distanceFromStartKm: 0, etaAt: '2026-08-01T10:00:00', weather: null },
-      { latitude: 52.1, longitude: 21.1, distanceFromStartKm: 30, etaAt: '2026-08-01T11:00:00', weather: null }
+      { latitude: 52.0, longitude: 21.0, distanceFromStartKm: 0, etaAt: '2026-08-01T10:00:00', weather: null, windRelativeDirection: null },
+      { latitude: 52.1, longitude: 21.1, distanceFromStartKm: 30, etaAt: '2026-08-01T11:00:00', weather: null, windRelativeDirection: null }
     ],
     track: []
   };
@@ -34,7 +34,8 @@ function responseWithRain(precipitationMm: number): ReforecastRouteResponse {
           relativeHumidityPercent: 50,
           uvIndex: 3,
           windGustsKmh: 15
-        }
+        },
+        windRelativeDirection: null
       }
     ]
   };

@@ -7,7 +7,7 @@ import { PlanRouteResponse } from './route-plan-api.model';
 function sampleResult(): PlanRouteResponse {
   return {
     totalDistanceKm: 30,
-    samples: [{ latitude: 52.0, longitude: 21.0, distanceFromStartKm: 0, etaAt: '2026-08-01T10:00:00', weather: null }],
+    samples: [{ latitude: 52.0, longitude: 21.0, distanceFromStartKm: 0, etaAt: '2026-08-01T10:00:00', weather: null, windRelativeDirection: null }],
     track: []
   };
 }

@@ -1,10 +1,11 @@
 import { Component, computed, inject } from '@angular/core';
 
 import { RoutePlanStateService } from './route-plan-state.service';
-import { WeatherForecastDto } from './route-plan-api.model';
+import { RouteSampleDto, WeatherForecastDto } from './route-plan-api.model';
 import { weatherIconKind } from './weather-icon';
 import { WeatherGlyphComponent } from './weather-glyph.component';
 import { summarizePrecipitationAlert } from './route-interpolation';
+import { describeWindRelativeDirection } from './wind-relative-direction';
 import { ElevationProfileComponent } from './elevation-profile.component';
 import { DepartureShiftComponent } from './departure-shift.component';
 import { VariantComparisonComponent } from './variant-comparison.component';
@@ -59,6 +60,10 @@ export class RoutePlanResultComponent {
 
   protected iconKind(weather: WeatherForecastDto) {
     return weatherIconKind(weather);
+  }
+
+  protected windRelativeDirection(sample: RouteSampleDto) {
+    return describeWindRelativeDirection(sample.windRelativeDirection);
   }
 
   /** Surfaces the secondary weather variables (not worth a dedicated grid column) as a

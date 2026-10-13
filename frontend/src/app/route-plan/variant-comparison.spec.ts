@@ -15,12 +15,13 @@ function sample(temperatureCelsius: number, precipitationMm: number): RouteSampl
       relativeHumidityPercent: 50,
       uvIndex: 3,
       windGustsKmh: 15
-    }
+    },
+    windRelativeDirection: null
   };
 }
 
 function sampleWithoutForecast(): RouteSampleDto {
-  return { latitude: 52.0, longitude: 21.0, distanceFromStartKm: 0, etaAt: '2026-08-01T10:00:00', weather: null };
+  return { latitude: 52.0, longitude: 21.0, distanceFromStartKm: 0, etaAt: '2026-08-01T10:00:00', weather: null, windRelativeDirection: null };
 }
 
 describe('summarizeVariant', () => {

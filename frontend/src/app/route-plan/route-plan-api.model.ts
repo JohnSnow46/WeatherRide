@@ -14,6 +14,7 @@ export interface RouteSampleDto {
   distanceFromStartKm: number;
   etaAt: string;
   weather: WeatherForecastDto | null;
+  windRelativeDirection: 'Headwind' | 'Crosswind' | 'Tailwind' | null;
 }
 
 export interface TrackPointDto {

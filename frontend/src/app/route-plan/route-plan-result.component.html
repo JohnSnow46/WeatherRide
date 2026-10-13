@@ -47,7 +47,12 @@
 
           <div class="meta">
             @if (sample.weather; as weather) {
-              <span class="wind-cell detail tabular-nums">{{ weather.windSpeedKmh.toFixed(1) }} km/h</span>
+              <span class="wind-cell detail tabular-nums">
+                {{ weather.windSpeedKmh.toFixed(1) }} km/h
+                @if (windRelativeDirection(sample); as wind) {
+                  <span class="wind-relative-badge {{ wind.cssClass }}" [title]="wind.label">{{ wind.symbol }}</span>
+                }
+              </span>
               <span class="precip-cell detail tabular-nums">{{ weather.precipitationMm.toFixed(1) }} mm</span>
             }
             <span class="eta tabular-nums">{{ formatEta(sample.etaAt) }}</span>

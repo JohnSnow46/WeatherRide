@@ -127,6 +127,23 @@
   color: var(--color-text-muted);
 }
 
+.wind-relative-badge {
+  margin-left: 0.25rem;
+  font-weight: 700;
+}
+
+.wind-relative-badge.headwind {
+  color: var(--color-accent-danger);
+}
+
+.wind-relative-badge.tailwind {
+  color: var(--color-primary);
+}
+
+.wind-relative-badge.crosswind {
+  color: var(--color-text-muted);
+}
+
 .eta {
   grid-column: 5;
   font-size: 0.8125rem;

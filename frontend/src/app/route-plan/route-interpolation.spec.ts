@@ -41,7 +41,8 @@ describe('interpolateWeather', () => {
       longitude: 0,
       distanceFromStartKm,
       etaAt: new Date().toISOString(),
-      weather
+      weather,
+      windRelativeDirection: null
     };
   }
 
@@ -119,7 +120,8 @@ describe('summarizePrecipitationAlert', () => {
               relativeHumidityPercent: 50,
               uvIndex: 2,
               windGustsKmh: 15
-            }
+            },
+      windRelativeDirection: null
     };
   }
 
