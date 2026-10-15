@@ -1,7 +1,11 @@
 import { RouteSampleDto } from './route-plan-api.model';
 import { RouteVariant, pickBestVariant, summarizeVariant, variantLabel } from './variant-comparison';
 
-function sample(temperatureCelsius: number, precipitationMm: number): RouteSampleDto {
+function sample(
+  temperatureCelsius: number,
+  precipitationMm: number,
+  windRelativeDirection: RouteSampleDto['windRelativeDirection'] = null
+): RouteSampleDto {
   return {
     latitude: 52.0,
     longitude: 21.0,
@@ -16,7 +20,7 @@ function sample(temperatureCelsius: number, precipitationMm: number): RouteSampl
       uvIndex: 3,
       windGustsKmh: 15
     },
-    windRelativeDirection: null
+    windRelativeDirection
   };
 }
 
@@ -38,6 +42,24 @@ describe('summarizeVariant', () => {
     expect(summary.maxPrecipitationMm).toBe(2.5);
     expect(summary.samplesWithRain).toBe(2);
     expect(summary.samplesWithForecast).toBe(3);
+  });
+
+  it('CountsSamplesWithHeadwind_IgnoringCrosswindAndTailwind', () => {
+    const variant: RouteVariant = {
+      label: 'Original',
+      departureShiftHours: 0,
+      samples: [
+        sample(10, 0, 'Headwind'),
+        sample(12, 0, 'Crosswind'),
+        sample(14, 0, 'Tailwind'),
+        sample(16, 0, 'Headwind'),
+        sample(18, 0, null)
+      ]
+    };
+
+    const summary = summarizeVariant(variant);
+
+    expect(summary.samplesWithHeadwind).toBe(2);
   });
 
   it('IgnoresSamplesWithoutForecast', () => {

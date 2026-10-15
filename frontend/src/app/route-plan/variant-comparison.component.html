@@ -12,6 +12,7 @@
           <th>Avg temp</th>
           <th>Max precip.</th>
           <th>Points w/ rain</th>
+          <th>Points w/ headwind</th>
           <th></th>
         </tr>
       </thead>
@@ -26,6 +27,7 @@
               {{ summary.maxPrecipitationMm !== null ? summary.maxPrecipitationMm.toFixed(1) + ' mm' : '—' }}
             </td>
             <td class="tabular-nums">{{ summary.samplesWithRain }} / {{ summary.samplesWithForecast }}</td>
+            <td class="tabular-nums">{{ summary.samplesWithHeadwind }} / {{ summary.samplesWithForecast }}</td>
             <td>
               <button type="button" class="remove" (click)="remove(summary.departureShiftHours)">Remove</button>
             </td>

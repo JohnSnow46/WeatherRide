@@ -16,6 +16,7 @@ export interface VariantSummary {
   maxPrecipitationMm: number | null;
   samplesWithRain: number;
   samplesWithForecast: number;
+  samplesWithHeadwind: number;
 }
 
 export function summarizeVariant(variant: RouteVariant): VariantSummary {
@@ -32,7 +33,12 @@ export function summarizeVariant(variant: RouteVariant): VariantSummary {
         : null,
     maxPrecipitationMm: withWeather.length > 0 ? Math.max(...withWeather.map(s => s.weather.precipitationMm)) : null,
     samplesWithRain: withWeather.filter(s => s.weather.precipitationMm > 0).length,
-    samplesWithForecast: withWeather.length
+    samplesWithForecast: withWeather.length,
+    // windRelativeDirection (roadmap #10) never made it into this comparison --
+    // a variant with less rain can still be the worse choice if it trades that
+    // for more headwind, so surface the count alongside rain instead of silently
+    // dropping data the main results table already has per sample.
+    samplesWithHeadwind: variant.samples.filter(s => s.windRelativeDirection === 'Headwind').length
   };
 }
 
