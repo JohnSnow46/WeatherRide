@@ -38,6 +38,20 @@
   font-weight: 700;
 }
 
+.clear-result {
+  padding: 0.25rem 0.625rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md, 6px);
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  font-size: 0.8125rem;
+  cursor: pointer;
+}
+
+.clear-result:hover {
+  background: var(--color-surface-hover, var(--color-border));
+}
+
 .precipitation-alert {
   color: var(--color-accent-danger);
   font-weight: 600;
