@@ -12,6 +12,13 @@
             </span>
           }
         }
+        @if (headwindAlert(); as headwind) {
+          @if (headwind.samplesWithHeadwind > 0) {
+            <span class="stat headwind-alert">
+              &#8595; {{ headwind.samplesWithHeadwind }} of {{ headwind.totalSamples }} points have headwind
+            </span>
+          }
+        }
         <button type="button" class="clear-result" (click)="routePlanStateService.clearResult()">Clear</button>
       </div>
     </div>

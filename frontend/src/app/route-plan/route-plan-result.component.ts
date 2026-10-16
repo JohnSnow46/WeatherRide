@@ -4,7 +4,7 @@ import { RoutePlanStateService } from './route-plan-state.service';
 import { RouteSampleDto, WeatherForecastDto } from './route-plan-api.model';
 import { weatherIconKind } from './weather-icon';
 import { WeatherGlyphComponent } from './weather-glyph.component';
-import { summarizePrecipitationAlert } from './route-interpolation';
+import { summarizeHeadwindAlert, summarizePrecipitationAlert } from './route-interpolation';
 import { describeWindRelativeDirection } from './wind-relative-direction';
 import { ElevationProfileComponent } from './elevation-profile.component';
 import { DepartureShiftComponent } from './departure-shift.component';
@@ -56,6 +56,17 @@ export class RoutePlanResultComponent {
       return null;
     }
     return summarizePrecipitationAlert(result.samples);
+  });
+
+  /** One-glance headwind summary for the header badge, mirroring precipitationAlert --
+   * windRelativeDirection (roadmap #10) never got a top-level summary, only the per-row
+   * badge in the results table and the per-variant count added to the comparison table. */
+  protected readonly headwindAlert = computed(() => {
+    const result = this.routePlanStateService.result();
+    if (!result) {
+      return null;
+    }
+    return summarizeHeadwindAlert(result.samples);
   });
 
   protected iconKind(weather: WeatherForecastDto) {

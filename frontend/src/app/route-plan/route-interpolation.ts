@@ -104,6 +104,24 @@ export function summarizePrecipitationAlert(
   };
 }
 
+export interface HeadwindAlertSummary {
+  samplesWithHeadwind: number;
+  totalSamples: number;
+}
+
+/** Counts how many samples are headwind -- the same "one-glance" summary as
+ * summarizePrecipitationAlert, for windRelativeDirection instead of rain. Denominator is
+ * every sample (not just ones with a forecast): windRelativeDirection is `null` both
+ * beyond the forecast horizon AND when the wind simply isn't strong enough to categorize
+ * (WindRelativeDirectionCalculator's threshold), and both cases are equally "no headwind
+ * concern here" for this summary. */
+export function summarizeHeadwindAlert(samples: RouteSampleDto[]): HeadwindAlertSummary {
+  return {
+    samplesWithHeadwind: samples.filter(s => s.windRelativeDirection === 'Headwind').length,
+    totalSamples: samples.length
+  };
+}
+
 function pickWeather(
   weather: NonNullable<RouteSampleDto['weather']>,
   isEstimatedBeyondForecastRange: boolean

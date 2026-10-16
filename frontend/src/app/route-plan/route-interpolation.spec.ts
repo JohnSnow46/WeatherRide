@@ -1,5 +1,5 @@
 import { RouteSampleDto, TrackPointDto } from './route-plan-api.model';
-import { interpolatePosition, interpolateWeather, summarizePrecipitationAlert } from './route-interpolation';
+import { interpolatePosition, interpolateWeather, summarizeHeadwindAlert, summarizePrecipitationAlert } from './route-interpolation';
 
 describe('interpolatePosition', () => {
   const track: TrackPointDto[] = [
@@ -151,5 +151,38 @@ describe('summarizePrecipitationAlert', () => {
     const result = summarizePrecipitationAlert([sampleWithPrecipitation(null)]);
 
     expect(result).toEqual({ samplesAboveThreshold: 0, samplesWithForecast: 0 });
+  });
+});
+
+describe('summarizeHeadwindAlert', () => {
+  function sampleWithDirection(windRelativeDirection: RouteSampleDto['windRelativeDirection']): RouteSampleDto {
+    return {
+      latitude: 0,
+      longitude: 0,
+      distanceFromStartKm: 0,
+      etaAt: new Date().toISOString(),
+      weather: null,
+      windRelativeDirection
+    };
+  }
+
+  it('summarizeHeadwindAlert_CountsOnlyHeadwindSamples_AgainstTotalSampleCount', () => {
+    const samples = [
+      sampleWithDirection('Headwind'),
+      sampleWithDirection('Crosswind'),
+      sampleWithDirection('Tailwind'),
+      sampleWithDirection('Headwind'),
+      sampleWithDirection(null)
+    ];
+
+    const result = summarizeHeadwindAlert(samples);
+
+    expect(result).toEqual({ samplesWithHeadwind: 2, totalSamples: 5 });
+  });
+
+  it('summarizeHeadwindAlert_NoHeadwindSamples_ReturnsZeroCount', () => {
+    const result = summarizeHeadwindAlert([sampleWithDirection('Tailwind'), sampleWithDirection(null)]);
+
+    expect(result).toEqual({ samplesWithHeadwind: 0, totalSamples: 2 });
   });
 });
