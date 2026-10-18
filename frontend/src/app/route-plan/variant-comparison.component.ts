@@ -49,4 +49,21 @@ export class VariantComparisonComponent {
       variants.filter(v => v.departureShiftHours !== departureShiftHours)
     );
   }
+
+  /** Switches the active result/table/map below to this variant's samples -- same
+   * `result.set({...result, samples})` + `departureShiftHours.set(...)` pair best-window's
+   * `findBest()` already uses, since a variant is just a snapshot of samples at a shift
+   * that's already been fetched (no new request). Without this, the comparison table was
+   * the only way to see a variant's numbers -- there was no way to inspect it point-by-point
+   * in the table/map below, only the currently "live" shift. */
+  view(departureShiftHours: number): void {
+    const state = this.routePlanStateService;
+    const result = state.result();
+    const variant = state.comparisonVariants().find(v => v.departureShiftHours === departureShiftHours);
+    if (!result || !variant) {
+      return;
+    }
+    state.result.set({ ...result, samples: variant.samples });
+    state.departureShiftHours.set(variant.departureShiftHours);
+  }
 }

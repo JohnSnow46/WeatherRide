@@ -67,6 +67,39 @@ describe('VariantComparisonComponent', () => {
     expect(stateService.comparisonVariants().length).toBe(3);
   });
 
+  it('View_SwapsResultSamplesAndShiftToTheSelectedVariant_KeepingDistanceAndTrack', () => {
+    const fixture = TestBed.createComponent(VariantComparisonComponent);
+    const stateService = TestBed.inject(RoutePlanStateService);
+    stateService.result.set(sampleResult());
+    stateService.departureShiftHours.set(0);
+    fixture.componentInstance.addCurrent();
+
+    const shiftedSamples = [
+      { latitude: 53.0, longitude: 22.0, distanceFromStartKm: 0, etaAt: '2026-08-01T12:00:00', weather: null, windRelativeDirection: null }
+    ];
+    stateService.result.set({ ...sampleResult(), samples: shiftedSamples });
+    stateService.departureShiftHours.set(2);
+    fixture.componentInstance.addCurrent();
+
+    fixture.componentInstance.view(0);
+
+    expect(stateService.result()?.samples).toEqual(sampleResult().samples);
+    expect(stateService.result()?.totalDistanceKm).toBe(sampleResult().totalDistanceKm);
+    expect(stateService.departureShiftHours()).toBe(0);
+  });
+
+  it('View_DoesNothing_WhenNoVariantMatchesTheShift', () => {
+    const fixture = TestBed.createComponent(VariantComparisonComponent);
+    const stateService = TestBed.inject(RoutePlanStateService);
+    stateService.result.set(sampleResult());
+    stateService.departureShiftHours.set(0);
+
+    fixture.componentInstance.view(5);
+
+    expect(stateService.result()).toEqual(sampleResult());
+    expect(stateService.departureShiftHours()).toBe(0);
+  });
+
   it('Remove_DropsOnlyTheMatchingVariant', () => {
     const fixture = TestBed.createComponent(VariantComparisonComponent);
     const stateService = TestBed.inject(RoutePlanStateService);
