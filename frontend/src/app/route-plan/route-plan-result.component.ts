@@ -1,10 +1,14 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 
 import { RoutePlanStateService } from './route-plan-state.service';
 import { RouteSampleDto, WeatherForecastDto } from './route-plan-api.model';
 import { weatherIconKind } from './weather-icon';
 import { WeatherGlyphComponent } from './weather-glyph.component';
-import { summarizeHeadwindAlert, summarizePrecipitationAlert } from './route-interpolation';
+import {
+  DEFAULT_PRECIPITATION_ALERT_THRESHOLD_MM,
+  summarizeHeadwindAlert,
+  summarizePrecipitationAlert
+} from './route-interpolation';
 import { describeWindRelativeDirection } from './wind-relative-direction';
 import { ElevationProfileComponent } from './elevation-profile.component';
 import { DepartureShiftComponent } from './departure-shift.component';
@@ -49,14 +53,30 @@ export class RoutePlanResultComponent {
     });
   }
 
+  /** Bounds for the rain-alert threshold slider (mm/h) — roadmap #2 specified the
+   * threshold as slider-configurable, the first implementation shipped it fixed at 1 mm/h. */
+  protected readonly minPrecipitationThresholdMm = 0.2;
+  protected readonly maxPrecipitationThresholdMm = 5;
+
+  readonly precipitationThresholdMm = signal(DEFAULT_PRECIPITATION_ALERT_THRESHOLD_MM);
+
   /** One-glance rain summary for the header badge — "3 of 12 points expect rain". */
   protected readonly precipitationAlert = computed(() => {
     const result = this.routePlanStateService.result();
     if (!result) {
       return null;
     }
-    return summarizePrecipitationAlert(result.samples);
+    return summarizePrecipitationAlert(result.samples, this.precipitationThresholdMm());
   });
+
+  setPrecipitationThreshold(thresholdMm: number): void {
+    if (!Number.isFinite(thresholdMm)) {
+      return;
+    }
+    this.precipitationThresholdMm.set(
+      Math.min(this.maxPrecipitationThresholdMm, Math.max(this.minPrecipitationThresholdMm, thresholdMm))
+    );
+  }
 
   /** One-glance headwind summary for the header badge, mirroring precipitationAlert --
    * windRelativeDirection (roadmap #10) never got a top-level summary, only the per-row

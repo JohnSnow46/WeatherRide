@@ -9,6 +9,7 @@
           @if (alert.samplesAboveThreshold > 0) {
             <span class="stat precipitation-alert">
               &#9748; {{ alert.samplesAboveThreshold }} of {{ alert.samplesWithForecast }} points expect rain
+              (&gt; {{ precipitationThresholdMm().toFixed(1) }} mm/h)
             </span>
           }
         }
@@ -22,6 +23,20 @@
         <button type="button" class="clear-result" (click)="routePlanStateService.clearResult()">Clear</button>
       </div>
     </div>
+
+    <label class="rain-threshold">
+      Rain alert above
+      <input
+        type="range"
+        [min]="minPrecipitationThresholdMm"
+        [max]="maxPrecipitationThresholdMm"
+        step="0.1"
+        [value]="precipitationThresholdMm()"
+        (input)="setPrecipitationThreshold($any($event.target).valueAsNumber)"
+        aria-label="Rain alert threshold in mm per hour"
+      />
+      <span class="tabular-nums">{{ precipitationThresholdMm().toFixed(1) }} mm/h</span>
+    </label>
 
     <app-elevation-profile [track]="result.track" />
 
