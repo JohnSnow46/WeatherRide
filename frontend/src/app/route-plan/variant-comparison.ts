@@ -13,6 +13,8 @@ export interface VariantSummary {
   label: string;
   departureShiftHours: number;
   avgTemperatureCelsius: number | null;
+  minTemperatureCelsius: number | null;
+  maxTemperatureCelsius: number | null;
   maxPrecipitationMm: number | null;
   samplesWithRain: number;
   samplesWithForecast: number;
@@ -31,6 +33,10 @@ export function summarizeVariant(variant: RouteVariant): VariantSummary {
       withWeather.length > 0
         ? withWeather.reduce((sum, s) => sum + s.weather.temperatureCelsius, 0) / withWeather.length
         : null,
+    // Roadmap #6 asked for the "extreme temperature" per variant, not just the average --
+    // a 15°C average can hide a 4°C pre-dawn start that matters more to the rider.
+    minTemperatureCelsius: withWeather.length > 0 ? Math.min(...withWeather.map(s => s.weather.temperatureCelsius)) : null,
+    maxTemperatureCelsius: withWeather.length > 0 ? Math.max(...withWeather.map(s => s.weather.temperatureCelsius)) : null,
     maxPrecipitationMm: withWeather.length > 0 ? Math.max(...withWeather.map(s => s.weather.precipitationMm)) : null,
     samplesWithRain: withWeather.filter(s => s.weather.precipitationMm > 0).length,
     samplesWithForecast: withWeather.length,

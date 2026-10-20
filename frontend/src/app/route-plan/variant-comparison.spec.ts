@@ -39,6 +39,8 @@ describe('summarizeVariant', () => {
     const summary = summarizeVariant(variant);
 
     expect(summary.avgTemperatureCelsius).toBeCloseTo(20, 5);
+    expect(summary.minTemperatureCelsius).toBe(10);
+    expect(summary.maxTemperatureCelsius).toBe(30);
     expect(summary.maxPrecipitationMm).toBe(2.5);
     expect(summary.samplesWithRain).toBe(2);
     expect(summary.samplesWithForecast).toBe(3);
@@ -85,6 +87,8 @@ describe('summarizeVariant', () => {
     const summary = summarizeVariant(variant);
 
     expect(summary.avgTemperatureCelsius).toBeNull();
+    expect(summary.minTemperatureCelsius).toBeNull();
+    expect(summary.maxTemperatureCelsius).toBeNull();
     expect(summary.maxPrecipitationMm).toBeNull();
     expect(summary.samplesWithRain).toBe(0);
     expect(summary.samplesWithForecast).toBe(0);

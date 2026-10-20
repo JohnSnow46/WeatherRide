@@ -10,6 +10,7 @@
         <tr>
           <th>Variant</th>
           <th>Avg temp</th>
+          <th>Temp range</th>
           <th>Max precip.</th>
           <th>Points w/ rain</th>
           <th>Points w/ headwind</th>
@@ -22,6 +23,13 @@
             <td>{{ summary.label }}</td>
             <td class="tabular-nums">
               {{ summary.avgTemperatureCelsius !== null ? summary.avgTemperatureCelsius.toFixed(1) + '°C' : '—' }}
+            </td>
+            <td class="tabular-nums">
+              @if (summary.minTemperatureCelsius !== null && summary.maxTemperatureCelsius !== null) {
+                {{ summary.minTemperatureCelsius.toFixed(1) }}–{{ summary.maxTemperatureCelsius.toFixed(1) }}°C
+              } @else {
+                —
+              }
             </td>
             <td class="tabular-nums">
               {{ summary.maxPrecipitationMm !== null ? summary.maxPrecipitationMm.toFixed(1) + ' mm' : '—' }}
