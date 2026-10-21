@@ -16,6 +16,7 @@ export interface VariantSummary {
   minTemperatureCelsius: number | null;
   maxTemperatureCelsius: number | null;
   maxPrecipitationMm: number | null;
+  maxWindGustsKmh: number | null;
   samplesWithRain: number;
   samplesWithForecast: number;
   samplesWithHeadwind: number;
@@ -38,6 +39,9 @@ export function summarizeVariant(variant: RouteVariant): VariantSummary {
     minTemperatureCelsius: withWeather.length > 0 ? Math.min(...withWeather.map(s => s.weather.temperatureCelsius)) : null,
     maxTemperatureCelsius: withWeather.length > 0 ? Math.max(...withWeather.map(s => s.weather.temperatureCelsius)) : null,
     maxPrecipitationMm: withWeather.length > 0 ? Math.max(...withWeather.map(s => s.weather.precipitationMm)) : null,
+    // Gusts (roadmap #4, "istotny dla rowerzystów") only ever reached the per-row hover
+    // tooltip -- invisible on touch devices and never compared across variants.
+    maxWindGustsKmh: withWeather.length > 0 ? Math.max(...withWeather.map(s => s.weather.windGustsKmh)) : null,
     samplesWithRain: withWeather.filter(s => s.weather.precipitationMm > 0).length,
     samplesWithForecast: withWeather.length,
     // windRelativeDirection (roadmap #10) never made it into this comparison --
