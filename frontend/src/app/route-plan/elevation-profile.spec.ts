@@ -35,6 +35,7 @@ describe('buildElevationProfile', () => {
     const profile = buildElevationProfile(track);
 
     expect(profile!.totalAscentM).toBe(0);
+    expect(profile!.totalDescentM).toBe(100);
   });
 
   it('buildElevationProfile_UpDownUp_SumsOnlyPositiveDeltas', () => {
@@ -44,6 +45,8 @@ describe('buildElevationProfile', () => {
 
     // +50 (100->150), -30 ignored, +60 (120->180) = 110
     expect(profile!.totalAscentM).toBe(110);
+    // only the -30 (150->120) counts towards descent
+    expect(profile!.totalDescentM).toBe(30);
   });
 
   it('buildElevationProfile_FlatProfile_DrawsMidlineWithoutDivideByZero', () => {

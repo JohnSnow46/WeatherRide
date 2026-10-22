@@ -8,6 +8,9 @@ export interface ElevationProfile {
   maxElevationM: number;
   /** Sum of positive elevation deltas between consecutive points — total climbing. */
   totalAscentM: number;
+  /** Sum of negative elevation deltas (as a positive number) — total descending. Ascent alone
+   * hides whether a route is a loop or ends far below/above the start. */
+  totalDescentM: number;
 }
 
 const VIEWBOX_WIDTH = 100;
@@ -47,13 +50,16 @@ export function buildElevationProfile(track: TrackPointDto[]): ElevationProfile 
     })
     .join(' ');
 
-  const totalAscentM = withElevation.reduce((sum, p, i) => {
-    if (i === 0) {
-      return sum;
+  let totalAscentM = 0;
+  let totalDescentM = 0;
+  for (let i = 1; i < withElevation.length; i++) {
+    const delta = withElevation[i].elevation - withElevation[i - 1].elevation;
+    if (delta > 0) {
+      totalAscentM += delta;
+    } else {
+      totalDescentM -= delta;
     }
-    const delta = p.elevation - withElevation[i - 1].elevation;
-    return delta > 0 ? sum + delta : sum;
-  }, 0);
+  }
 
-  return { points, minElevationM, maxElevationM, totalAscentM };
+  return { points, minElevationM, maxElevationM, totalAscentM, totalDescentM };
 }

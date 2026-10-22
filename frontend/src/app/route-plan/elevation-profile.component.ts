@@ -15,6 +15,7 @@ const EXPORT_HEIGHT_PX = 320;
         <div class="elevation-stats">
           <span>{{ profile.minElevationM.toFixed(0) }}–{{ profile.maxElevationM.toFixed(0) }} m</span>
           <span>&#8599; {{ profile.totalAscentM.toFixed(0) }} m ascent</span>
+          <span>&#8600; {{ profile.totalDescentM.toFixed(0) }} m descent</span>
           <button type="button" class="elevation-download" (click)="downloadAsImage()">Download as image</button>
         </div>
         <svg #chart viewBox="0 0 100 40" preserveAspectRatio="none" class="elevation-chart">
