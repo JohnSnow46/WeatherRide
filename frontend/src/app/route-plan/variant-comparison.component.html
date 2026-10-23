@@ -13,6 +13,7 @@
           <th>Temp range</th>
           <th>Max precip.</th>
           <th>Max gust</th>
+          <th>Max UV</th>
           <th>Points w/ rain</th>
           <th>Points w/ headwind</th>
           <th></th>
@@ -38,6 +39,7 @@
             <td class="tabular-nums">
               {{ summary.maxWindGustsKmh !== null ? summary.maxWindGustsKmh.toFixed(0) + ' km/h' : '—' }}
             </td>
+            <td class="tabular-nums">{{ summary.maxUvIndex !== null ? summary.maxUvIndex.toFixed(1) : '—' }}</td>
             <td class="tabular-nums">{{ summary.samplesWithRain }} / {{ summary.samplesWithForecast }}</td>
             <td class="tabular-nums">{{ summary.samplesWithHeadwind }} / {{ summary.samplesWithForecast }}</td>
             <td>

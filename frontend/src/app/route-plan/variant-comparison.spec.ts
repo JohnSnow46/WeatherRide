@@ -91,6 +91,20 @@ describe('summarizeVariant', () => {
     expect(summarizeVariant(variant).maxWindGustsKmh).toBe(48);
   });
 
+  it('FindsMaxUvIndex_AcrossSamplesWithForecast', () => {
+    const withUv = (uvIndex: number): RouteSampleDto => {
+      const s = sample(15, 0);
+      return { ...s, weather: { ...s.weather!, uvIndex } };
+    };
+    const variant: RouteVariant = {
+      label: 'Original',
+      departureShiftHours: 0,
+      samples: [withUv(1.5), withUv(6.2), sampleWithoutForecast(), withUv(4)]
+    };
+
+    expect(summarizeVariant(variant).maxUvIndex).toBe(6.2);
+  });
+
   it('ReturnsNulls_WhenNoSampleHasForecast', () => {
     const variant: RouteVariant = {
       label: '-3h',
@@ -104,6 +118,7 @@ describe('summarizeVariant', () => {
     expect(summary.minTemperatureCelsius).toBeNull();
     expect(summary.maxTemperatureCelsius).toBeNull();
     expect(summary.maxWindGustsKmh).toBeNull();
+    expect(summary.maxUvIndex).toBeNull();
     expect(summary.maxPrecipitationMm).toBeNull();
     expect(summary.samplesWithRain).toBe(0);
     expect(summary.samplesWithForecast).toBe(0);

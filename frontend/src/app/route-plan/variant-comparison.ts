@@ -17,6 +17,7 @@ export interface VariantSummary {
   maxTemperatureCelsius: number | null;
   maxPrecipitationMm: number | null;
   maxWindGustsKmh: number | null;
+  maxUvIndex: number | null;
   samplesWithRain: number;
   samplesWithForecast: number;
   samplesWithHeadwind: number;
@@ -42,6 +43,9 @@ export function summarizeVariant(variant: RouteVariant): VariantSummary {
     // Gusts (roadmap #4, "istotny dla rowerzystów") only ever reached the per-row hover
     // tooltip -- invisible on touch devices and never compared across variants.
     maxWindGustsKmh: withWeather.length > 0 ? Math.max(...withWeather.map(s => s.weather.windGustsKmh)) : null,
+    // Same tooltip-only gap for UV (roadmap #4: "UV dla długich tras w słońcu") -- shifting a
+    // departure by a few hours mostly trades rain for midday sun, which this makes visible.
+    maxUvIndex: withWeather.length > 0 ? Math.max(...withWeather.map(s => s.weather.uvIndex)) : null,
     samplesWithRain: withWeather.filter(s => s.weather.precipitationMm > 0).length,
     samplesWithForecast: withWeather.length,
     // windRelativeDirection (roadmap #10) never made it into this comparison --
