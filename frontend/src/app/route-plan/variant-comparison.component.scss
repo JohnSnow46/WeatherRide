@@ -51,6 +51,16 @@
   border-bottom: 1px solid var(--color-border);
 }
 
+/* The variant currently shown in the results below -- after "View" or "Shift departure" the
+ * table never said which row that was. Same accent as the active sample row. */
+.variant-table tr.is-current td {
+  background: color-mix(in srgb, var(--color-primary) 8%, transparent);
+}
+
+.variant-table tr.is-current td:first-child {
+  box-shadow: inset 2px 0 0 var(--color-primary);
+}
+
 .variant-table th {
   color: var(--color-text-muted);
   font-weight: 500;

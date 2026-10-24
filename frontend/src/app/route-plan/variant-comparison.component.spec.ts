@@ -88,6 +88,28 @@ describe('VariantComparisonComponent', () => {
     expect(stateService.departureShiftHours()).toBe(0);
   });
 
+  it('MarksTheRowMatchingTheCurrentShift_AndDisablesItsViewButton', () => {
+    const fixture = TestBed.createComponent(VariantComparisonComponent);
+    const stateService = TestBed.inject(RoutePlanStateService);
+    stateService.comparisonVariants.set([]);
+    stateService.result.set(sampleResult());
+    stateService.departureShiftHours.set(0);
+    fixture.componentInstance.addCurrent();
+    stateService.departureShiftHours.set(2);
+    fixture.componentInstance.addCurrent();
+
+    fixture.componentInstance.view(0);
+    fixture.detectChanges();
+
+    const rows = (fixture.nativeElement as HTMLElement).querySelectorAll('tbody tr');
+    expect(rows.length).toBe(2);
+    expect(rows[0].classList.contains('is-current')).toBeTrue();
+    expect(rows[0].getAttribute('aria-current')).toBe('true');
+    expect((rows[0].querySelector('button') as HTMLButtonElement).disabled).toBeTrue();
+    expect(rows[1].classList.contains('is-current')).toBeFalse();
+    expect((rows[1].querySelector('button') as HTMLButtonElement).disabled).toBeFalse();
+  });
+
   it('View_DoesNothing_WhenNoVariantMatchesTheShift', () => {
     const fixture = TestBed.createComponent(VariantComparisonComponent);
     const stateService = TestBed.inject(RoutePlanStateService);

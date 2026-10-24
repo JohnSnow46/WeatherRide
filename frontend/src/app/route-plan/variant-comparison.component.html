@@ -21,7 +21,10 @@
       </thead>
       <tbody>
         @for (summary of summaries(); track summary.departureShiftHours) {
-          <tr>
+          <tr
+            [class.is-current]="summary.departureShiftHours === routePlanStateService.departureShiftHours()"
+            [attr.aria-current]="summary.departureShiftHours === routePlanStateService.departureShiftHours() ? 'true' : null"
+          >
             <td>{{ summary.label }}</td>
             <td class="tabular-nums">
               {{ summary.avgTemperatureCelsius !== null ? summary.avgTemperatureCelsius.toFixed(1) + '°C' : '—' }}
@@ -43,7 +46,13 @@
             <td class="tabular-nums">{{ summary.samplesWithRain }} / {{ summary.samplesWithForecast }}</td>
             <td class="tabular-nums">{{ summary.samplesWithHeadwind }} / {{ summary.samplesWithForecast }}</td>
             <td>
-              <button type="button" (click)="view(summary.departureShiftHours)">View</button>
+              <button
+                type="button"
+                (click)="view(summary.departureShiftHours)"
+                [disabled]="summary.departureShiftHours === routePlanStateService.departureShiftHours()"
+              >
+                View
+              </button>
               <button type="button" class="remove" (click)="remove(summary.departureShiftHours)">Remove</button>
             </td>
           </tr>
