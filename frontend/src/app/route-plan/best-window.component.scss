@@ -26,6 +26,10 @@
   cursor: not-allowed;
 }
 
+.best-window-result {
+  color: var(--color-text-muted);
+}
+
 .best-window-error {
   color: var(--color-accent-danger);
 }

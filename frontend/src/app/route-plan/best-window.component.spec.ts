@@ -49,6 +49,13 @@ describe('BestWindowComponent', () => {
     }).compileComponents();
   });
 
+  // The summary test runs change detection, which flushes the state service's
+  // localStorage persistence -- clear it so the result doesn't leak into other specs.
+  afterEach(() => {
+    TestBed.inject(RoutePlanStateService).clearResult();
+    localStorage.clear();
+  });
+
   it('DoesNothing_WhenNoResultIsSet', () => {
     const fixture = TestBed.createComponent(BestWindowComponent);
     const apiService = TestBed.inject(RoutePlanApiService);
@@ -79,6 +86,32 @@ describe('BestWindowComponent', () => {
     expect(spy).toHaveBeenCalledTimes(13);
     expect(stateService.departureShiftHours()).toBe(2);
     expect(stateService.result()!.samples[0].weather!.precipitationMm).toBe(0);
+  });
+
+  it('FindBest_ShowsPickedShiftSummary_UntilDepartureIsShiftedAgain', () => {
+    const fixture = TestBed.createComponent(BestWindowComponent);
+    const stateService = TestBed.inject(RoutePlanStateService);
+    const apiService = TestBed.inject(RoutePlanApiService);
+
+    stateService.result.set(sampleResult());
+    stateService.lastDepartureAtIso.set('2026-08-01T10:00:00');
+    stateService.lastAverageSpeedKmh.set(30);
+
+    spyOn(apiService, 'reforecastRoute').and.callFake((_samples, _dist, departureAtIso) =>
+      of(departureAtIso === '2026-08-01T12:00:00' ? responseWithRain(0) : responseWithRain(5))
+    );
+
+    fixture.componentInstance.findBest();
+    fixture.detectChanges();
+
+    const text = () => (fixture.nativeElement as HTMLElement).querySelector('.best-window-result')?.textContent ?? null;
+    expect(text()).toContain('Best: +2h');
+    expect(text()).toContain('0 of 1 points with rain');
+
+    stateService.departureShiftHours.set(3);
+    fixture.detectChanges();
+
+    expect(text()).toBeNull();
   });
 
   it('FindBest_ApiError_SetsErrorMessageAndDoesNotChangeState', () => {

@@ -3,6 +3,13 @@
     {{ isSearching() ? 'Searching...' : 'Find best hour (±6h)' }}
   </button>
 
+  @if (bestSummary(); as best) {
+    <span class="best-window-result">
+      Best: {{ variantLabel(best.departureShiftHours) }} &middot;
+      {{ best.samplesWithRain }} of {{ best.samplesWithForecast }} points with rain
+    </span>
+  }
+
   @if (error(); as e) {
     <span class="best-window-error">{{ e }}</span>
   }

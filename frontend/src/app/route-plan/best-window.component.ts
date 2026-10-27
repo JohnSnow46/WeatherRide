@@ -1,9 +1,9 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { forkJoin } from 'rxjs';
 
 import { RoutePlanApiService } from './route-plan-api.service';
 import { RoutePlanStateService } from './route-plan-state.service';
-import { RouteVariant, pickBestVariant } from './variant-comparison';
+import { RouteVariant, VariantSummary, pickBestVariant, summarizeVariant, variantLabel } from './variant-comparison';
 
 const WINDOW_HOURS = [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6] as const;
 
@@ -21,6 +21,15 @@ export class BestWindowComponent {
 
   protected readonly isSearching = signal(false);
   protected readonly error = signal<string | null>(null);
+  /** The search used to jump silently -- if the best hour was the one already shown, nothing
+   * visibly changed and it wasn't clear the search had even finished. Kept until the next
+   * search; only displayed while the shift it picked is still the one on screen. */
+  private readonly lastBest = signal<VariantSummary | null>(null);
+  protected readonly bestSummary = computed(() => {
+    const best = this.lastBest();
+    return best && best.departureShiftHours === this.routePlanStateService.departureShiftHours() ? best : null;
+  });
+  protected readonly variantLabel = variantLabel;
 
   findBest(): void {
     const state = this.routePlanStateService;
@@ -40,6 +49,7 @@ export class BestWindowComponent {
 
     this.isSearching.set(true);
     this.error.set(null);
+    this.lastBest.set(null);
 
     const requests = WINDOW_HOURS.map((shiftHours) => {
       const shiftedDepartureAt = new Date(originalDepartureAt.getTime());
@@ -65,6 +75,7 @@ export class BestWindowComponent {
 
         state.result.set({ ...result, samples: best.samples });
         state.departureShiftHours.set(best.departureShiftHours);
+        this.lastBest.set(summarizeVariant(best));
         this.isSearching.set(false);
       },
       error: (err) => {
