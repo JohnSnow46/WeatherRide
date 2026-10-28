@@ -73,6 +73,10 @@ export class RoutePlanFormComponent {
   readonly routeMode = computed(() => this.formValue().routeMode ?? 'gpx');
   readonly speedMode = computed(() => this.formValue().speedMode ?? 'speed');
   readonly sampleCount = computed(() => this.formValue().sampleCount ?? 20);
+  /** The travel-mode shortcuts never showed which one was in effect, unlike the route/pace
+   * segmented controls right above them -- after picking "Cycling" the buttons all looked the
+   * same again. Matches on the speed itself, so typing 18 by hand lights up "Cycling" too. */
+  readonly averageSpeedKmh = computed(() => this.formValue().averageSpeedKmh ?? null);
   readonly sampleCountPercent = computed(() => ((this.sampleCount() - 5) / (50 - 5)) * 100);
 
   readonly canSubmit = computed(() => {

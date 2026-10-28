@@ -140,7 +140,13 @@
       <label for="averageSpeedKmh">Average speed (km/h)</label>
       <div class="segmented" role="group" aria-label="Travel mode shortcuts">
         @for (mode of travelModes; track mode.label) {
-          <button type="button" class="segmented-option" (click)="setTravelMode(mode.speedKmh)">
+          <button
+            type="button"
+            class="segmented-option"
+            [class.is-active]="averageSpeedKmh() === mode.speedKmh"
+            [attr.aria-pressed]="averageSpeedKmh() === mode.speedKmh"
+            (click)="setTravelMode(mode.speedKmh)"
+          >
             {{ mode.label }}
           </button>
         }

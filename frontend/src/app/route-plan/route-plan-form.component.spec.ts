@@ -124,6 +124,24 @@ describe('RoutePlanFormComponent', () => {
     expect(fixture.componentInstance.form.value.averageSpeedKmh).toBe(18);
   });
 
+  it('marks the travel-mode shortcut matching the current speed', () => {
+    const fixture = TestBed.createComponent(RoutePlanFormComponent);
+    fixture.detectChanges();
+
+    fixture.componentInstance.setTravelMode(18);
+    fixture.detectChanges();
+
+    const pressed = () =>
+      Array.from((fixture.nativeElement as HTMLElement).querySelectorAll('[aria-pressed="true"]')).map(b =>
+        b.textContent?.trim()
+      );
+    expect(pressed()).toEqual(['Cycling']);
+
+    fixture.componentInstance.form.patchValue({ averageSpeedKmh: 22 });
+    fixture.detectChanges();
+    expect(pressed()).toEqual([]);
+  });
+
   it('switches to direct point A/B mode and disables submit until both points are valid', () => {
     const fixture = TestBed.createComponent(RoutePlanFormComponent);
     fixture.componentInstance.form.patchValue({
