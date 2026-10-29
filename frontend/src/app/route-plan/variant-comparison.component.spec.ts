@@ -17,6 +17,13 @@ describe('VariantComparisonComponent', () => {
     await TestBed.configureTestingModule({ imports: [VariantComparisonComponent] }).compileComponents();
   });
 
+  // Same cleanup as best-window.component.spec: detectChanges flushes the state service's
+  // localStorage persistence, which would otherwise leak into other specs.
+  afterEach(() => {
+    TestBed.inject(RoutePlanStateService).clearResult();
+    localStorage.clear();
+  });
+
   it('CanAddCurrent_IsFalse_WhenNoResult', () => {
     const fixture = TestBed.createComponent(VariantComparisonComponent);
 
@@ -65,6 +72,28 @@ describe('VariantComparisonComponent', () => {
     fixture.componentInstance.addCurrent();
 
     expect(stateService.comparisonVariants().length).toBe(3);
+  });
+
+  it('ExplainsWhyAddIsDisabled_WhenShiftAlreadyAddedOrTableFull', () => {
+    const fixture = TestBed.createComponent(VariantComparisonComponent);
+    const stateService = TestBed.inject(RoutePlanStateService);
+    stateService.result.set(sampleResult());
+    const reason = () => {
+      fixture.detectChanges();
+      return (fixture.nativeElement as HTMLElement).querySelector('.add-disabled-reason')?.textContent?.trim() ?? null;
+    };
+
+    expect(reason()).toBeNull();
+
+    fixture.componentInstance.addCurrent();
+    expect(reason()).toBe('This departure is already in the comparison.');
+
+    stateService.departureShiftHours.set(1);
+    fixture.componentInstance.addCurrent();
+    stateService.departureShiftHours.set(2);
+    fixture.componentInstance.addCurrent();
+    stateService.departureShiftHours.set(3);
+    expect(reason()).toContain('Up to 3 variants');
   });
 
   it('View_SwapsResultSamplesAndShiftToTheSelectedVariant_KeepingDistanceAndTrack', () => {

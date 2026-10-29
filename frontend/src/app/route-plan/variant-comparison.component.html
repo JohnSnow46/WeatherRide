@@ -2,6 +2,9 @@
   <div class="header-row">
     <span class="label">Compare departure variants:</span>
     <button type="button" (click)="addCurrent()" [disabled]="!canAddCurrent()">Add current as variant</button>
+    @if (addDisabledReason(); as reason) {
+      <span class="hint add-disabled-reason">{{ reason }}</span>
+    }
   </div>
 
   @if (summaries().length > 0) {

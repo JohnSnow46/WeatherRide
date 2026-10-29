@@ -28,6 +28,23 @@ export class VariantComparisonComponent {
     return !state.comparisonVariants().some(v => v.departureShiftHours === shift);
   });
 
+  /** Why "Add current as variant" is disabled -- it went grey with no explanation once the
+   * table was full or the shown departure was already in it, which read as broken. */
+  protected readonly addDisabledReason = computed(() => {
+    const state = this.routePlanStateService;
+    if (!state.result()) {
+      return null;
+    }
+    const shift = state.departureShiftHours();
+    if (state.comparisonVariants().some(v => v.departureShiftHours === shift)) {
+      return 'This departure is already in the comparison.';
+    }
+    if (state.comparisonVariants().length >= MAX_VARIANTS) {
+      return `Up to ${MAX_VARIANTS} variants — remove one to add another.`;
+    }
+    return null;
+  });
+
   addCurrent(): void {
     const state = this.routePlanStateService;
     const result = state.result();
