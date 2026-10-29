@@ -52,6 +52,28 @@ describe('RoutePlanResultComponent', () => {
     return badge?.textContent?.replace(/\s+/g, ' ').trim() ?? null;
   }
 
+  it('ClearResult_NotConfirmed_KeepsTheResult', () => {
+    const fixture = TestBed.createComponent(RoutePlanResultComponent);
+    const state = TestBed.inject(RoutePlanStateService);
+    state.result.set(sampleResult());
+    spyOn(window, 'confirm').and.returnValue(false);
+
+    fixture.componentInstance.clearResult();
+
+    expect(state.result()).not.toBeNull();
+  });
+
+  it('ClearResult_Confirmed_ClearsTheResult', () => {
+    const fixture = TestBed.createComponent(RoutePlanResultComponent);
+    const state = TestBed.inject(RoutePlanStateService);
+    state.result.set(sampleResult());
+    spyOn(window, 'confirm').and.returnValue(true);
+
+    fixture.componentInstance.clearResult();
+
+    expect(state.result()).toBeNull();
+  });
+
   it('RainAlert_DefaultThreshold_CountsSamplesAboveOneMmPerHour', () => {
     const fixture = TestBed.createComponent(RoutePlanResultComponent);
     TestBed.inject(RoutePlanStateService).result.set(sampleResult());

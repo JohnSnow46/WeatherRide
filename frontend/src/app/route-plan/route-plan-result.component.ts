@@ -69,6 +69,15 @@ export class RoutePlanResultComponent {
     return summarizePrecipitationAlert(result.samples, this.precipitationThresholdMm());
   });
 
+  /** "Clear" sits in the result header and wiped the planned route together with every
+   * compared variant (each one a separate reforecast) on one click -- and with the GPX file
+   * not persisted, getting it back meant re-uploading and re-planning. Asks first. */
+  clearResult(): void {
+    if (window.confirm('Clear this route plan and all compared variants?')) {
+      this.routePlanStateService.clearResult();
+    }
+  }
+
   setPrecipitationThreshold(thresholdMm: number): void {
     if (!Number.isFinite(thresholdMm)) {
       return;
