@@ -116,6 +116,17 @@ export class RoutePlanFormComponent {
     );
   });
 
+  /** Planning the ride back meant retyping all four coordinates in the other order. */
+  swapPoints(): void {
+    const { pointALatitude, pointALongitude, pointBLatitude, pointBLongitude } = this.form.getRawValue();
+    this.form.patchValue({
+      pointALatitude: pointBLatitude,
+      pointALongitude: pointBLongitude,
+      pointBLatitude: pointALatitude,
+      pointBLongitude: pointALongitude
+    });
+  }
+
   setTravelMode(speedKmh: number): void {
     this.form.patchValue({ speedMode: 'speed', averageSpeedKmh: speedKmh });
   }

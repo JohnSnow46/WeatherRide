@@ -190,6 +190,23 @@ describe('RoutePlanFormComponent', () => {
     expect(fixture.componentInstance.canSubmit()).toBeTrue();
   });
 
+  it('swapPoints exchanges point A and point B for the ride back', () => {
+    const fixture = TestBed.createComponent(RoutePlanFormComponent);
+    fixture.componentInstance.form.patchValue({
+      routeMode: 'direct',
+      pointALatitude: 52.0,
+      pointALongitude: 21.0,
+      pointBLatitude: 50.0,
+      pointBLongitude: 19.9
+    });
+
+    fixture.componentInstance.swapPoints();
+
+    const value = fixture.componentInstance.form.value;
+    expect([value.pointALatitude, value.pointALongitude]).toEqual([50.0, 19.9]);
+    expect([value.pointBLatitude, value.pointBLongitude]).toEqual([52.0, 21.0]);
+  });
+
   it('submits direct point A/B mode by calling planDirectRoute with the entered coordinates', () => {
     const fixture = TestBed.createComponent(RoutePlanFormComponent);
     const apiService = TestBed.inject(RoutePlanApiService);
