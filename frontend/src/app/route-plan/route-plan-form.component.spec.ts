@@ -79,6 +79,32 @@ describe('RoutePlanFormComponent', () => {
     expect(stateService.error()).toBe('The GPX file must not exceed 5 MB.');
   });
 
+  it('rejects a dropped file that is not a .gpx and surfaces an error instead of setting it', () => {
+    const fixture = TestBed.createComponent(RoutePlanFormComponent);
+    const stateService = TestBed.inject(RoutePlanStateService);
+    const photo = new File(['not a route'], 'photo.jpg');
+
+    fixture.componentInstance.onDrop({
+      preventDefault: () => {},
+      dataTransfer: { files: [photo] }
+    } as unknown as DragEvent);
+
+    expect(fixture.componentInstance.selectedFile()).toBeNull();
+    expect(stateService.error()).toBe('Please choose a .gpx file.');
+  });
+
+  it('accepts a dropped .GPX file regardless of extension case', () => {
+    const fixture = TestBed.createComponent(RoutePlanFormComponent);
+    const file = new File(['<gpx></gpx>'], 'Morning Ride.GPX');
+
+    fixture.componentInstance.onDrop({
+      preventDefault: () => {},
+      dataTransfer: { files: [file] }
+    } as unknown as DragEvent);
+
+    expect(fixture.componentInstance.selectedFile()).toBe(file);
+  });
+
   it('sends departureAt as raw local clock digits, without timezone-offset conversion', () => {
     const fixture = TestBed.createComponent(RoutePlanFormComponent);
     const apiService = TestBed.inject(RoutePlanApiService);

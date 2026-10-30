@@ -150,6 +150,14 @@ export class RoutePlanFormComponent {
   }
 
   private setSelectedFile(file: File | null): void {
+    // The input's accept=".gpx" only filters the file picker -- a file dropped onto the zone
+    // bypasses it, so a dropped .jpg/.kml used to be accepted and only fail after the upload.
+    if (file && !file.name.toLowerCase().endsWith('.gpx')) {
+      this.routePlanStateService.error.set('Please choose a .gpx file.');
+      this.selectedFile.set(null);
+      return;
+    }
+
     if (file && file.size > RoutePlanFormComponent.MAX_GPX_FILE_SIZE_BYTES) {
       this.routePlanStateService.error.set('The GPX file must not exceed 5 MB.');
       this.selectedFile.set(null);
