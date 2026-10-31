@@ -52,6 +52,25 @@ describe('RoutePlanResultComponent', () => {
     return badge?.textContent?.replace(/\s+/g, ' ').trim() ?? null;
   }
 
+  it('SampleRows_RainGlyphAndWindArrow_HaveAccessibleNames', () => {
+    const fixture = TestBed.createComponent(RoutePlanResultComponent);
+    const state = TestBed.inject(RoutePlanStateService);
+    const result = sampleResult();
+    result.samples[0] = sampleWithPrecipitation(0, 0);
+    result.samples[2] = { ...result.samples[2], windRelativeDirection: 'Headwind' };
+    state.result.set(result);
+    fixture.detectChanges();
+
+    const host = fixture.nativeElement as HTMLElement;
+    const glyphs = Array.from(host.querySelectorAll('.sample-row .app-weather-glyph'));
+    expect(glyphs.map((g) => g.getAttribute('aria-label'))).toEqual(['No rain', 'Rain', 'Rain']);
+    expect(glyphs.every((g) => g.getAttribute('role') === 'img')).toBeTrue();
+
+    const badge = host.querySelector('.wind-relative-badge');
+    expect(badge?.getAttribute('role')).toBe('img');
+    expect(badge?.getAttribute('aria-label')).toBe('Headwind');
+  });
+
   it('ClearResult_NotConfirmed_KeepsTheResult', () => {
     const fixture = TestBed.createComponent(RoutePlanResultComponent);
     const state = TestBed.inject(RoutePlanStateService);
