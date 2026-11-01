@@ -132,4 +132,24 @@ describe('BestWindowComponent', () => {
     expect(fixture.componentInstance['error']()).toBe('Nieprawidlowe dane wejsciowe');
     expect(stateService.departureShiftHours()).toBe(0);
   });
+
+  it('FindBest_ApiError_RendersErrorAsAlert', () => {
+    const fixture = TestBed.createComponent(BestWindowComponent);
+    const stateService = TestBed.inject(RoutePlanStateService);
+    const apiService = TestBed.inject(RoutePlanApiService);
+
+    stateService.result.set(sampleResult());
+    stateService.lastDepartureAtIso.set('2026-08-01T10:00:00');
+    stateService.lastAverageSpeedKmh.set(30);
+
+    spyOn(apiService, 'reforecastRoute').and.returnValue(
+      throwError(() => ({ error: { detail: 'Nieprawidlowe dane wejsciowe' } }))
+    );
+
+    fixture.componentInstance.findBest();
+    fixture.detectChanges();
+
+    const alert = (fixture.nativeElement as HTMLElement).querySelector('[role="alert"]');
+    expect(alert?.textContent?.trim()).toBe('Nieprawidlowe dane wejsciowe');
+  });
 });
