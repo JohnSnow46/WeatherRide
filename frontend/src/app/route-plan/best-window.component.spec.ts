@@ -107,6 +107,7 @@ describe('BestWindowComponent', () => {
     const text = () => (fixture.nativeElement as HTMLElement).querySelector('.best-window-result')?.textContent ?? null;
     expect(text()).toContain('Best: +2h');
     expect(text()).toContain('0 of 1 points with rain');
+    expect((fixture.nativeElement as HTMLElement).querySelector('[role="status"] .best-window-result')).not.toBeNull();
 
     stateService.departureShiftHours.set(3);
     fixture.detectChanges();
