@@ -43,6 +43,11 @@
   color: var(--color-text-muted);
 }
 
+.shift-progress {
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
 .shift-error {
   color: var(--color-accent-danger);
 }

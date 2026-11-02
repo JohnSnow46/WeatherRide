@@ -18,6 +18,10 @@
     </span>
   }
 
+  @if (isShifting()) {
+    <span class="shift-progress" role="status">Updating forecast…</span>
+  }
+
   @if (error(); as e) {
     <span class="shift-error" role="alert">{{ e }}</span>
   }

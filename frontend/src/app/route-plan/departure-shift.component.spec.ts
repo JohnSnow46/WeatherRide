@@ -1,6 +1,6 @@
 import { provideHttpClient } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
-import { of, throwError } from 'rxjs';
+import { Subject, of, throwError } from 'rxjs';
 
 import { DepartureShiftComponent } from './departure-shift.component';
 import { RoutePlanApiService } from './route-plan-api.service';
@@ -24,6 +24,13 @@ describe('DepartureShiftComponent', () => {
       imports: [DepartureShiftComponent],
       providers: [provideHttpClient()]
     }).compileComponents();
+  });
+
+  // The new status spec runs detectChanges(), which flushes the state service's
+  // localStorage persistence -- same cleanup as best-window's spec.
+  afterEach(() => {
+    TestBed.inject(RoutePlanStateService).clearResult();
+    localStorage.clear();
   });
 
   it('DoesNothing_WhenNoResultIsSet', () => {
@@ -69,6 +76,32 @@ describe('DepartureShiftComponent', () => {
     expect(stateService.departureShiftHours()).toBe(2);
     expect(stateService.result()!.samples).toEqual(response.samples);
     expect(stateService.result()!.totalDistanceKm).toBe(30);
+  });
+
+  it('Shift_WhileRequestPending_ShowsUpdatingStatus', () => {
+    const fixture = TestBed.createComponent(DepartureShiftComponent);
+    const stateService = TestBed.inject(RoutePlanStateService);
+    const apiService = TestBed.inject(RoutePlanApiService);
+
+    stateService.result.set(sampleResult());
+    stateService.lastDepartureAtIso.set('2026-08-01T10:00:00');
+    stateService.lastAverageSpeedKmh.set(30);
+    stateService.lastPlannedDurationHours.set(null);
+
+    const pending = new Subject<ReforecastRouteResponse>();
+    spyOn(apiService, 'reforecastRoute').and.returnValue(pending.asObservable());
+
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('[role="status"]')).toBeNull();
+
+    fixture.componentInstance.shift(1);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('[role="status"]').textContent).toContain('Updating forecast');
+
+    pending.next({ samples: sampleResult().samples });
+    pending.complete();
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('[role="status"]')).toBeNull();
   });
 
   it('Reset_AfterShift_RestoresZeroShiftAndOriginalDepartureTime', () => {
