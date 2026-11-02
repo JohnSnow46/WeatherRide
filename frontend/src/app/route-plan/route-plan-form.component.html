@@ -188,6 +188,13 @@
       Plan route
     }
   </button>
+  <!-- The button's own "Planning your route…" is not announced (it's disabled and keeps
+       focus elsewhere), so an always-present live region carries it for screen readers. -->
+  <span class="visually-hidden" role="status">
+    @if (routePlanStateService.isLoading()) {
+      Planning your route…
+    }
+  </span>
 
   @if (routePlanStateService.error(); as errorMessage) {
     <p class="status error" role="alert">{{ errorMessage }}</p>

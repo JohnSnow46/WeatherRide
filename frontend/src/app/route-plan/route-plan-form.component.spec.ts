@@ -53,6 +53,24 @@ describe('RoutePlanFormComponent', () => {
     expect(saved.averageSpeedKmh).toBe(18);
   });
 
+  it('announces planning progress in a live region that is present before planning starts', () => {
+    const fixture = TestBed.createComponent(RoutePlanFormComponent);
+    const stateService = TestBed.inject(RoutePlanStateService);
+    fixture.detectChanges();
+
+    const liveRegion: HTMLElement = fixture.nativeElement.querySelector('.visually-hidden[role="status"]');
+    expect(liveRegion).not.toBeNull();
+    expect(liveRegion.textContent!.trim()).toBe('');
+
+    stateService.isLoading.set(true);
+    fixture.detectChanges();
+    expect(liveRegion.textContent).toContain('Planning your route');
+
+    stateService.isLoading.set(false);
+    fixture.detectChanges();
+    expect(liveRegion.textContent!.trim()).toBe('');
+  });
+
   it('disables the submit button when no GPX file is selected', () => {
     const fixture = TestBed.createComponent(RoutePlanFormComponent);
     fixture.componentInstance.form.patchValue({
