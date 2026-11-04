@@ -30,6 +30,20 @@ describe('VariantComparisonComponent', () => {
     expect(fixture.componentInstance['canAddCurrent']()).toBeFalse();
   });
 
+  it('RowButtons_NameTheirVariant_AndActionsColumnHasAName', () => {
+    const fixture = TestBed.createComponent(VariantComparisonComponent);
+    const stateService = TestBed.inject(RoutePlanStateService);
+    stateService.result.set(sampleResult());
+    stateService.departureShiftHours.set(2);
+    fixture.componentInstance.addCurrent();
+    fixture.detectChanges();
+
+    const element: HTMLElement = fixture.nativeElement;
+    const labels = Array.from(element.querySelectorAll('tbody button')).map((b) => b.getAttribute('aria-label'));
+    expect(labels).toEqual(['View variant +2h', 'Remove variant +2h']);
+    expect(element.querySelector('thead th:last-child')?.getAttribute('aria-label')).toBe('Actions');
+  });
+
   it('AddCurrent_SnapshotsResultWithLabelFromCurrentShift', () => {
     const fixture = TestBed.createComponent(VariantComparisonComponent);
     const stateService = TestBed.inject(RoutePlanStateService);

@@ -19,7 +19,7 @@
           <th>Max UV</th>
           <th>Points w/ rain</th>
           <th>Points w/ headwind</th>
-          <th></th>
+          <th aria-label="Actions"></th>
         </tr>
       </thead>
       <tbody>
@@ -53,10 +53,18 @@
                 type="button"
                 (click)="view(summary.departureShiftHours)"
                 [disabled]="summary.departureShiftHours === routePlanStateService.departureShiftHours()"
+                [attr.aria-label]="'View variant ' + summary.label"
               >
                 View
               </button>
-              <button type="button" class="remove" (click)="remove(summary.departureShiftHours)">Remove</button>
+              <button
+                type="button"
+                class="remove"
+                (click)="remove(summary.departureShiftHours)"
+                [attr.aria-label]="'Remove variant ' + summary.label"
+              >
+                Remove
+              </button>
             </td>
           </tr>
         }
