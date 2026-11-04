@@ -43,6 +43,16 @@ export class RouteSliderComponent {
     return (this.routePlanStateService.selectedDistanceKm() / result.totalDistanceKm) * 100;
   });
 
+  /** Spoken instead of the slider's raw value, which has no unit and many decimals. */
+  protected readonly positionText = computed(() => {
+    const result = this.routePlanStateService.result();
+    if (!result) {
+      return null;
+    }
+    const selectedKm = this.routePlanStateService.selectedDistanceKm();
+    return `${selectedKm.toFixed(1)} of ${result.totalDistanceKm.toFixed(1)} km`;
+  });
+
   onDistanceInput(event: Event): void {
     const value = Number((event.target as HTMLInputElement).value);
     this.routePlanStateService.selectedDistanceKm.set(value);
