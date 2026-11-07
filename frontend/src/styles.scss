@@ -127,3 +127,18 @@ label,
   color: #1d4ed8;
   line-height: 1;
 }
+
+/* Visitors who ask the OS for reduced motion get no fade-in on the result card, no
+   spinning loader and no thumb/hover transitions. Durations go to ~0 rather than `none`
+   so `animationend`/`transitionend` still fire for anything waiting on them. The
+   loading state stays readable: the button text says "Planning your route…". */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
