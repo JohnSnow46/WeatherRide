@@ -116,6 +116,31 @@ export class RoutePlanFormComponent {
     );
   });
 
+  /** A latitude of 95 (or a longitude of 200) only kept "Plan route" disabled -- nothing said
+   * which field was wrong. Empty fields are left alone: they are unfinished, not invalid. */
+  readonly outOfRange = computed(() => {
+    const value = this.formValue();
+    return {
+      pointALatitude: value.pointALatitude != null && !this.isValidLatitude(value.pointALatitude),
+      pointALongitude: value.pointALongitude != null && !this.isValidLongitude(value.pointALongitude),
+      pointBLatitude: value.pointBLatitude != null && !this.isValidLatitude(value.pointBLatitude),
+      pointBLongitude: value.pointBLongitude != null && !this.isValidLongitude(value.pointBLongitude)
+    };
+  });
+
+  rangeHint(latitudeOutOfRange: boolean, longitudeOutOfRange: boolean): string | null {
+    if (latitudeOutOfRange && longitudeOutOfRange) {
+      return 'Latitude must be between -90 and 90, longitude between -180 and 180.';
+    }
+    if (latitudeOutOfRange) {
+      return 'Latitude must be between -90 and 90.';
+    }
+    if (longitudeOutOfRange) {
+      return 'Longitude must be between -180 and 180.';
+    }
+    return null;
+  }
+
   /** Planning the ride back meant retyping all four coordinates in the other order. */
   swapPoints(): void {
     const { pointALatitude, pointALongitude, pointBLatitude, pointBLongitude } = this.form.getRawValue();

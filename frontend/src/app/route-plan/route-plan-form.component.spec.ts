@@ -43,6 +43,27 @@ describe('RoutePlanFormComponent', () => {
     expect(fixture.componentInstance.form.value.pointALatitude).toBe(52.0);
   });
 
+  it('flags an out-of-range coordinate and says why', () => {
+    const fixture = TestBed.createComponent(RoutePlanFormComponent);
+    fixture.componentInstance.form.patchValue({ routeMode: 'direct', pointALatitude: 95, pointALongitude: 21 });
+    fixture.detectChanges();
+
+    const el: HTMLElement = fixture.nativeElement;
+    expect(el.querySelector('[aria-label="Point A latitude"]')!.getAttribute('aria-invalid')).toBe('true');
+    expect(el.querySelector('[aria-label="Point A longitude"]')!.hasAttribute('aria-invalid')).toBe(false);
+    expect(el.querySelector('[role="alert"].field-hint')!.textContent).toContain('Latitude must be between -90 and 90.');
+  });
+
+  it('does not flag empty coordinates', () => {
+    const fixture = TestBed.createComponent(RoutePlanFormComponent);
+    fixture.componentInstance.form.patchValue({ routeMode: 'direct' });
+    fixture.detectChanges();
+
+    const el: HTMLElement = fixture.nativeElement;
+    expect(el.querySelector('[aria-invalid]')).toBeNull();
+    expect(el.querySelector('[role="alert"].field-hint')).toBeNull();
+  });
+
   it('saves the current form values to localStorage as they change', () => {
     const fixture = TestBed.createComponent(RoutePlanFormComponent);
     fixture.detectChanges();

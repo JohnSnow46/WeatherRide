@@ -32,6 +32,7 @@
           placeholder="Latitude"
           formControlName="pointALatitude"
           aria-label="Point A latitude"
+          [attr.aria-invalid]="outOfRange().pointALatitude || null"
         />
         <input
           type="number"
@@ -41,8 +42,12 @@
           placeholder="Longitude"
           formControlName="pointALongitude"
           aria-label="Point A longitude"
+          [attr.aria-invalid]="outOfRange().pointALongitude || null"
         />
       </div>
+      @if (rangeHint(outOfRange().pointALatitude, outOfRange().pointALongitude); as hint) {
+        <span class="field-hint" role="alert">{{ hint }}</span>
+      }
     </div>
 
     <button type="button" class="swap-points-btn" (click)="swapPoints()">⇅ Swap A and B</button>
@@ -58,6 +63,7 @@
           placeholder="Latitude"
           formControlName="pointBLatitude"
           aria-label="Point B latitude"
+          [attr.aria-invalid]="outOfRange().pointBLatitude || null"
         />
         <input
           type="number"
@@ -67,8 +73,12 @@
           placeholder="Longitude"
           formControlName="pointBLongitude"
           aria-label="Point B longitude"
+          [attr.aria-invalid]="outOfRange().pointBLongitude || null"
         />
       </div>
+      @if (rangeHint(outOfRange().pointBLatitude, outOfRange().pointBLongitude); as hint) {
+        <span class="field-hint" role="alert">{{ hint }}</span>
+      }
       @if (isSamePoint()) {
         <span class="field-hint">Point B must differ from Point A.</span>
       }
