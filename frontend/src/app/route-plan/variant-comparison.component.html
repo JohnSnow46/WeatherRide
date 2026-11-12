@@ -9,9 +9,10 @@
 
   @if (summaries().length > 0) {
     <table class="variant-table">
+      <caption class="visually-hidden">Departure variants compared</caption>
       <thead>
         <tr>
-          <th>Variant</th>
+          <th scope="col">Variant</th>
           <th>Avg temp</th>
           <th>Temp range</th>
           <th>Max precip.</th>
@@ -28,7 +29,8 @@
             [class.is-current]="summary.departureShiftHours === routePlanStateService.departureShiftHours()"
             [attr.aria-current]="summary.departureShiftHours === routePlanStateService.departureShiftHours() ? 'true' : null"
           >
-            <td>{{ summary.label }}</td>
+            <!-- Row header, so moving across a row reads out which variant each value belongs to. -->
+            <th scope="row">{{ summary.label }}</th>
             <td class="tabular-nums">
               {{ summary.avgTemperatureCelsius !== null ? summary.avgTemperatureCelsius.toFixed(1) + '°C' : '—' }}
             </td>

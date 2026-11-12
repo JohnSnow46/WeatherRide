@@ -53,17 +53,36 @@
 
 /* The variant currently shown in the results below -- after "View" or "Shift departure" the
  * table never said which row that was. Same accent as the active sample row. */
-.variant-table tr.is-current td {
+.variant-table tr.is-current td,
+.variant-table tr.is-current th {
   background: color-mix(in srgb, var(--color-primary) 8%, transparent);
 }
 
-.variant-table tr.is-current td:first-child {
+.variant-table tr.is-current th:first-child {
   box-shadow: inset 2px 0 0 var(--color-primary);
 }
 
 .variant-table th {
   color: var(--color-text-muted);
   font-weight: 500;
+}
+
+/* The variant name is a row header for screen readers, but should look like the cells. */
+.variant-table tbody th {
+  color: inherit;
+  font-weight: inherit;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .variant-table button.remove {
