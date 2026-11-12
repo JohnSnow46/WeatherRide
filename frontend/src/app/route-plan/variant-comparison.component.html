@@ -8,70 +8,74 @@
   </div>
 
   @if (summaries().length > 0) {
-    <table class="variant-table">
-      <caption class="visually-hidden">Departure variants compared</caption>
-      <thead>
-        <tr>
-          <th scope="col">Variant</th>
-          <th>Avg temp</th>
-          <th>Temp range</th>
-          <th>Max precip.</th>
-          <th>Max gust</th>
-          <th>Max UV</th>
-          <th>Points w/ rain</th>
-          <th>Points w/ headwind</th>
-          <th aria-label="Actions"></th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (summary of summaries(); track summary.departureShiftHours) {
-          <tr
-            [class.is-current]="summary.departureShiftHours === routePlanStateService.departureShiftHours()"
-            [attr.aria-current]="summary.departureShiftHours === routePlanStateService.departureShiftHours() ? 'true' : null"
-          >
-            <!-- Row header, so moving across a row reads out which variant each value belongs to. -->
-            <th scope="row">{{ summary.label }}</th>
-            <td class="tabular-nums">
-              {{ summary.avgTemperatureCelsius !== null ? summary.avgTemperatureCelsius.toFixed(1) + '°C' : '—' }}
-            </td>
-            <td class="tabular-nums">
-              @if (summary.minTemperatureCelsius !== null && summary.maxTemperatureCelsius !== null) {
-                {{ summary.minTemperatureCelsius.toFixed(1) }}–{{ summary.maxTemperatureCelsius.toFixed(1) }}°C
-              } @else {
-                —
-              }
-            </td>
-            <td class="tabular-nums">
-              {{ summary.maxPrecipitationMm !== null ? summary.maxPrecipitationMm.toFixed(1) + ' mm' : '—' }}
-            </td>
-            <td class="tabular-nums">
-              {{ summary.maxWindGustsKmh !== null ? summary.maxWindGustsKmh.toFixed(0) + ' km/h' : '—' }}
-            </td>
-            <td class="tabular-nums">{{ summary.maxUvIndex !== null ? summary.maxUvIndex.toFixed(1) : '—' }}</td>
-            <td class="tabular-nums">{{ summary.samplesWithRain }} / {{ summary.samplesWithForecast }}</td>
-            <td class="tabular-nums">{{ summary.samplesWithHeadwind }} / {{ summary.samplesWithForecast }}</td>
-            <td>
-              <button
-                type="button"
-                (click)="view(summary.departureShiftHours)"
-                [disabled]="summary.departureShiftHours === routePlanStateService.departureShiftHours()"
-                [attr.aria-label]="'View variant ' + summary.label"
-              >
-                View
-              </button>
-              <button
-                type="button"
-                class="remove"
-                (click)="remove(summary.departureShiftHours)"
-                [attr.aria-label]="'Remove variant ' + summary.label"
-              >
-                Remove
-              </button>
-            </td>
+    <!-- Nine columns don't fit a phone: scroll the table inside its own box instead of
+         widening the page. Focusable, so the keyboard can scroll it too. -->
+    <div class="variant-table-wrap" role="region" aria-label="Departure variants" tabindex="0">
+      <table class="variant-table">
+        <caption class="visually-hidden">Departure variants compared</caption>
+        <thead>
+          <tr>
+            <th scope="col">Variant</th>
+            <th>Avg temp</th>
+            <th>Temp range</th>
+            <th>Max precip.</th>
+            <th>Max gust</th>
+            <th>Max UV</th>
+            <th>Points w/ rain</th>
+            <th>Points w/ headwind</th>
+            <th aria-label="Actions"></th>
           </tr>
-        }
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          @for (summary of summaries(); track summary.departureShiftHours) {
+            <tr
+              [class.is-current]="summary.departureShiftHours === routePlanStateService.departureShiftHours()"
+              [attr.aria-current]="summary.departureShiftHours === routePlanStateService.departureShiftHours() ? 'true' : null"
+            >
+              <!-- Row header, so moving across a row reads out which variant each value belongs to. -->
+              <th scope="row">{{ summary.label }}</th>
+              <td class="tabular-nums">
+                {{ summary.avgTemperatureCelsius !== null ? summary.avgTemperatureCelsius.toFixed(1) + '°C' : '—' }}
+              </td>
+              <td class="tabular-nums">
+                @if (summary.minTemperatureCelsius !== null && summary.maxTemperatureCelsius !== null) {
+                  {{ summary.minTemperatureCelsius.toFixed(1) }}–{{ summary.maxTemperatureCelsius.toFixed(1) }}°C
+                } @else {
+                  —
+                }
+              </td>
+              <td class="tabular-nums">
+                {{ summary.maxPrecipitationMm !== null ? summary.maxPrecipitationMm.toFixed(1) + ' mm' : '—' }}
+              </td>
+              <td class="tabular-nums">
+                {{ summary.maxWindGustsKmh !== null ? summary.maxWindGustsKmh.toFixed(0) + ' km/h' : '—' }}
+              </td>
+              <td class="tabular-nums">{{ summary.maxUvIndex !== null ? summary.maxUvIndex.toFixed(1) : '—' }}</td>
+              <td class="tabular-nums">{{ summary.samplesWithRain }} / {{ summary.samplesWithForecast }}</td>
+              <td class="tabular-nums">{{ summary.samplesWithHeadwind }} / {{ summary.samplesWithForecast }}</td>
+              <td>
+                <button
+                  type="button"
+                  (click)="view(summary.departureShiftHours)"
+                  [disabled]="summary.departureShiftHours === routePlanStateService.departureShiftHours()"
+                  [attr.aria-label]="'View variant ' + summary.label"
+                >
+                  View
+                </button>
+                <button
+                  type="button"
+                  class="remove"
+                  (click)="remove(summary.departureShiftHours)"
+                  [attr.aria-label]="'Remove variant ' + summary.label"
+                >
+                  Remove
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
   } @else {
     <p class="hint">Add the current result (and a shifted variant, via "Shift departure" above) to compare them side by side.</p>
   }
