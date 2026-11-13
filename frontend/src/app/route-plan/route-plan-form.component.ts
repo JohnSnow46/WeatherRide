@@ -159,6 +159,9 @@ export class RoutePlanFormComponent {
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     this.setSelectedFile(input.files?.[0] ?? null);
+    // The file lives in selectedFile from here on. Clearing the input lets the same file be
+    // picked again after "Remove" -- otherwise its value is unchanged and no change event fires.
+    input.value = '';
   }
 
   onDragOver(event: DragEvent): void {
