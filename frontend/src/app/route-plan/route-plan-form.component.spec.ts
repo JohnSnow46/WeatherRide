@@ -312,5 +312,35 @@ describe('RoutePlanFormComponent', () => {
       expect(el.querySelector('#departureAtPastHint')).toBeNull();
       expect(el.querySelector('#departureAt')!.hasAttribute('aria-describedby')).toBe(false);
     });
+
+    it('warns when the departure is beyond the 16-day forecast range', () => {
+      const fixture = TestBed.createComponent(RoutePlanFormComponent);
+      fixture.componentInstance.form.patchValue({ departureAt: '2026-08-26T08:00' });
+      fixture.detectChanges();
+
+      const el: HTMLElement = fixture.nativeElement;
+      expect(el.querySelector('#departureAtHorizonHint')?.textContent).toContain('16-day forecast range');
+      expect(el.querySelector('#departureAt')!.getAttribute('aria-describedby')).toBe('departureAtHorizonHint');
+    });
+
+    it('warns when a planned duration carries the ride past the forecast range', () => {
+      const fixture = TestBed.createComponent(RoutePlanFormComponent);
+      fixture.componentInstance.form.patchValue({ departureAt: '2026-08-25T20:00', speedMode: 'duration' });
+      expect(fixture.componentInstance.isBeyondForecastHorizon()).toBeFalse();
+
+      fixture.componentInstance.form.patchValue({ plannedDurationHours: 6 });
+      expect(fixture.componentInstance.isBeyondForecastHorizon()).toBeTrue();
+    });
+
+    it('ignores the planned duration while the average-speed mode is selected', () => {
+      const fixture = TestBed.createComponent(RoutePlanFormComponent);
+      fixture.componentInstance.form.patchValue({
+        departureAt: '2026-08-25T20:00',
+        speedMode: 'speed',
+        plannedDurationHours: 6
+      });
+
+      expect(fixture.componentInstance.isBeyondForecastHorizon()).toBeFalse();
+    });
   });
 });

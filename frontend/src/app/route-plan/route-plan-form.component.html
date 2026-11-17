@@ -134,11 +134,16 @@
       id="departureAt"
       type="datetime-local"
       formControlName="departureAt"
-      [attr.aria-describedby]="isDepartureInPast() ? 'departureAtPastHint' : null"
+      [attr.aria-describedby]="departureHintId()"
     />
     @if (isDepartureInPast()) {
       <span id="departureAtPastHint" class="field-hint" role="status">
         This departure time is in the past, so the forecast may be missing for it.
+      </span>
+    } @else if (isBeyondForecastHorizon()) {
+      <span id="departureAtHorizonHint" class="field-hint" role="status">
+        Part of this ride falls beyond the 16-day forecast range, so those points will have no
+        weather.
       </span>
     }
   </div>

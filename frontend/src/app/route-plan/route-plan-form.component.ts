@@ -19,6 +19,8 @@ interface TravelMode {
 })
 export class RoutePlanFormComponent {
   private static readonly MAX_GPX_FILE_SIZE_BYTES = 5 * 1024 * 1024;
+  /** Mirrors `forecast_days` in OpenMeteoWeatherClient. */
+  private static readonly FORECAST_DAYS = 16;
 
   readonly travelModes: readonly TravelMode[] = [
     { label: 'Walking', speedKmh: 5 },
@@ -135,6 +137,32 @@ export class RoutePlanFormComponent {
     const departure = this.parseDeparture(this.formValue().departureAt);
     return departure !== null && departure.getTime() < Date.now();
   });
+
+  /** Open-Meteo is asked for `forecast_days=16` (today + 15 days), and points with an ETA after
+   * that come back without weather (ADR-0002) -- a ride planned three weeks ahead used to return
+   * an empty table with no hint why. The ride's end is only known up front in the planned-duration
+   * mode; with an average speed the distance is unknown until the route is planned, so the
+   * departure itself is checked instead. */
+  readonly isBeyondForecastHorizon = computed(() => {
+    const value = this.formValue();
+    const departure = this.parseDeparture(value.departureAt);
+    if (departure === null) {
+      return false;
+    }
+    const durationHours =
+      value.speedMode === 'duration' && this.isPositiveNumber(value.plannedDurationHours)
+        ? value.plannedDurationHours!
+        : 0;
+    const rideEnd = departure.getTime() + durationHours * 60 * 60 * 1000;
+    const now = new Date(Date.now());
+    const horizonEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate() + RoutePlanFormComponent.FORECAST_DAYS);
+    return rideEnd >= horizonEnd.getTime();
+  });
+
+  /** Only one of the two departure hints can show at a time (past vs. too far ahead). */
+  readonly departureHintId = computed(() =>
+    this.isDepartureInPast() ? 'departureAtPastHint' : this.isBeyondForecastHorizon() ? 'departureAtHorizonHint' : null
+  );
 
   rangeHint(latitudeOutOfRange: boolean, longitudeOutOfRange: boolean): string | null {
     if (latitudeOutOfRange && longitudeOutOfRange) {
