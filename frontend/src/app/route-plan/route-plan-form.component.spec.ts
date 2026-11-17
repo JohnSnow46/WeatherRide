@@ -144,6 +144,35 @@ describe('RoutePlanFormComponent', () => {
     expect(fixture.componentInstance.selectedFile()).toBe(file);
   });
 
+  it('clears the file input after a pick so the same file can be chosen again after Remove', () => {
+    const fixture = TestBed.createComponent(RoutePlanFormComponent);
+    fixture.detectChanges();
+    const input = fixture.nativeElement.querySelector('#gpxFile') as HTMLInputElement;
+    const file = new File(['<gpx></gpx>'], 'route.gpx');
+    const pick = (target: HTMLInputElement) => {
+      // A fresh DataTransfer per pick: clearing the input also empties the FileList it was given.
+      const transfer = new DataTransfer();
+      transfer.items.add(file);
+      target.files = transfer.files;
+      target.dispatchEvent(new Event('change'));
+    };
+
+    pick(input);
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.selectedFile()).toBe(file);
+    expect(input.value).toBe('');
+
+    fixture.nativeElement.querySelector('.dropzone-clear').click();
+    fixture.detectChanges();
+    expect(fixture.componentInstance.selectedFile()).toBeNull();
+
+    // Picking the very same file again now fires a change event and selects it.
+    const reopenedInput = fixture.nativeElement.querySelector('#gpxFile') as HTMLInputElement;
+    pick(reopenedInput);
+    expect(fixture.componentInstance.selectedFile()).toBe(file);
+  });
+
   it('sends departureAt as raw local clock digits, without timezone-offset conversion', () => {
     const fixture = TestBed.createComponent(RoutePlanFormComponent);
     const apiService = TestBed.inject(RoutePlanApiService);
