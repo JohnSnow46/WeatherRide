@@ -128,6 +128,14 @@ export class RoutePlanFormComponent {
     };
   });
 
+  /** A departure in the past was planned without a word, and the points before "now" came back
+   * with old or missing forecasts. Compared against the browser clock -- the entered time is
+   * local to the route's start (ADR-0001), so this is only a heads-up, never a block. */
+  readonly isDepartureInPast = computed(() => {
+    const departure = this.parseDeparture(this.formValue().departureAt);
+    return departure !== null && departure.getTime() < Date.now();
+  });
+
   rangeHint(latitudeOutOfRange: boolean, longitudeOutOfRange: boolean): string | null {
     if (latitudeOutOfRange && longitudeOutOfRange) {
       return 'Latitude must be between -90 and 90, longitude between -180 and 180.';
@@ -255,6 +263,16 @@ export class RoutePlanFormComponent {
         this.routePlanStateService.isLoading.set(false);
       }
     });
+  }
+
+  /** `datetime-local` gives "YYYY-MM-DDTHH:mm" without an offset; `new Date` reads it as
+   * browser-local time, which is close enough for a warning. */
+  private parseDeparture(value: string | null | undefined): Date | null {
+    if (!value) {
+      return null;
+    }
+    const departure = new Date(value);
+    return Number.isNaN(departure.getTime()) ? null : departure;
   }
 
   private isPositiveNumber(value: number | null | undefined): boolean {

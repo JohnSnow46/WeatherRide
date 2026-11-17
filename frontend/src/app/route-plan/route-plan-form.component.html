@@ -130,7 +130,17 @@
 
   <div class="field">
     <label for="departureAt">Departure time</label>
-    <input id="departureAt" type="datetime-local" formControlName="departureAt" />
+    <input
+      id="departureAt"
+      type="datetime-local"
+      formControlName="departureAt"
+      [attr.aria-describedby]="isDepartureInPast() ? 'departureAtPastHint' : null"
+    />
+    @if (isDepartureInPast()) {
+      <span id="departureAtPastHint" class="field-hint" role="status">
+        This departure time is in the past, so the forecast may be missing for it.
+      </span>
+    }
   </div>
 
   <div class="field">
