@@ -12,7 +12,7 @@ describe('RoutePlanFormComponent', () => {
     localStorage.clear();
     await TestBed.configureTestingModule({
       imports: [RoutePlanFormComponent],
-      providers: [provideHttpClient()],
+      providers: [provideHttpClient()]
     }).compileComponents();
   });
 
@@ -31,8 +31,8 @@ describe('RoutePlanFormComponent', () => {
         pointALatitude: 52.0,
         pointALongitude: 21.0,
         pointBLatitude: 52.5,
-        pointBLongitude: 21.5,
-      }),
+        pointBLongitude: 21.5
+      })
     );
 
     const fixture = TestBed.createComponent(RoutePlanFormComponent);
@@ -45,23 +45,13 @@ describe('RoutePlanFormComponent', () => {
 
   it('flags an out-of-range coordinate and says why', () => {
     const fixture = TestBed.createComponent(RoutePlanFormComponent);
-    fixture.componentInstance.form.patchValue({
-      routeMode: 'direct',
-      pointALatitude: 95,
-      pointALongitude: 21,
-    });
+    fixture.componentInstance.form.patchValue({ routeMode: 'direct', pointALatitude: 95, pointALongitude: 21 });
     fixture.detectChanges();
 
     const el: HTMLElement = fixture.nativeElement;
-    expect(el.querySelector('[aria-label="Point A latitude"]')!.getAttribute('aria-invalid')).toBe(
-      'true',
-    );
-    expect(el.querySelector('[aria-label="Point A longitude"]')!.hasAttribute('aria-invalid')).toBe(
-      false,
-    );
-    expect(el.querySelector('[role="alert"].field-hint')!.textContent).toContain(
-      'Latitude must be between -90 and 90.',
-    );
+    expect(el.querySelector('[aria-label="Point A latitude"]')!.getAttribute('aria-invalid')).toBe('true');
+    expect(el.querySelector('[aria-label="Point A longitude"]')!.hasAttribute('aria-invalid')).toBe(false);
+    expect(el.querySelector('[role="alert"].field-hint')!.textContent).toContain('Latitude must be between -90 and 90.');
   });
 
   it('does not flag empty coordinates', () => {
@@ -89,9 +79,7 @@ describe('RoutePlanFormComponent', () => {
     const stateService = TestBed.inject(RoutePlanStateService);
     fixture.detectChanges();
 
-    const liveRegion: HTMLElement = fixture.nativeElement.querySelector(
-      '.visually-hidden[role="status"]',
-    );
+    const liveRegion: HTMLElement = fixture.nativeElement.querySelector('.visually-hidden[role="status"]');
     expect(liveRegion).not.toBeNull();
     expect(liveRegion.textContent!.trim()).toBe('');
 
@@ -108,13 +96,11 @@ describe('RoutePlanFormComponent', () => {
     const fixture = TestBed.createComponent(RoutePlanFormComponent);
     fixture.componentInstance.form.patchValue({
       departureAt: '2026-08-01T10:00',
-      averageSpeedKmh: 20,
+      averageSpeedKmh: 20
     });
     fixture.detectChanges();
 
-    const button = fixture.nativeElement.querySelector(
-      'button[type="submit"]',
-    ) as HTMLButtonElement;
+    const button = fixture.nativeElement.querySelector('button[type="submit"]') as HTMLButtonElement;
     expect(button.disabled).toBeTrue();
   });
 
@@ -125,7 +111,7 @@ describe('RoutePlanFormComponent', () => {
 
     fixture.componentInstance.onDrop({
       preventDefault: () => {},
-      dataTransfer: { files: [oversizedFile] },
+      dataTransfer: { files: [oversizedFile] }
     } as unknown as DragEvent);
 
     expect(fixture.componentInstance.selectedFile()).toBeNull();
@@ -139,7 +125,7 @@ describe('RoutePlanFormComponent', () => {
 
     fixture.componentInstance.onDrop({
       preventDefault: () => {},
-      dataTransfer: { files: [photo] },
+      dataTransfer: { files: [photo] }
     } as unknown as DragEvent);
 
     expect(fixture.componentInstance.selectedFile()).toBeNull();
@@ -152,7 +138,7 @@ describe('RoutePlanFormComponent', () => {
 
     fixture.componentInstance.onDrop({
       preventDefault: () => {},
-      dataTransfer: { files: [file] },
+      dataTransfer: { files: [file] }
     } as unknown as DragEvent);
 
     expect(fixture.componentInstance.selectedFile()).toBe(file);
@@ -161,14 +147,12 @@ describe('RoutePlanFormComponent', () => {
   it('sends departureAt as raw local clock digits, without timezone-offset conversion', () => {
     const fixture = TestBed.createComponent(RoutePlanFormComponent);
     const apiService = TestBed.inject(RoutePlanApiService);
-    const planRouteSpy = spyOn(apiService, 'planRoute').and.returnValue(
-      of({} as PlanRouteResponse),
-    );
+    const planRouteSpy = spyOn(apiService, 'planRoute').and.returnValue(of({} as PlanRouteResponse));
 
     fixture.componentInstance.selectedFile.set(new File(['<gpx></gpx>'], 'route.gpx'));
     fixture.componentInstance.form.patchValue({
       departureAt: '2026-08-01T10:00',
-      averageSpeedKmh: 20,
+      averageSpeedKmh: 20
     });
     fixture.detectChanges();
 
@@ -179,7 +163,7 @@ describe('RoutePlanFormComponent', () => {
       '2026-08-01T10:00:00',
       20,
       null,
-      20,
+      20
     );
   });
 
@@ -188,7 +172,7 @@ describe('RoutePlanFormComponent', () => {
     fixture.componentInstance.selectedFile.set(new File(['<gpx></gpx>'], 'route.gpx'));
     fixture.componentInstance.form.patchValue({
       departureAt: '2026-08-01T10:00',
-      averageSpeedKmh: Infinity,
+      averageSpeedKmh: Infinity
     });
     fixture.detectChanges();
 
@@ -213,9 +197,9 @@ describe('RoutePlanFormComponent', () => {
     fixture.detectChanges();
 
     const pressed = () =>
-      Array.from(
-        (fixture.nativeElement as HTMLElement).querySelectorAll('[aria-pressed="true"]'),
-      ).map((b) => b.textContent?.trim());
+      Array.from((fixture.nativeElement as HTMLElement).querySelectorAll('[aria-pressed="true"]')).map(b =>
+        b.textContent?.trim()
+      );
     expect(pressed()).toEqual(['Cycling']);
 
     fixture.componentInstance.form.patchValue({ averageSpeedKmh: 22 });
@@ -228,7 +212,7 @@ describe('RoutePlanFormComponent', () => {
     fixture.componentInstance.form.patchValue({
       routeMode: 'direct',
       departureAt: '2026-08-01T10:00',
-      averageSpeedKmh: 20,
+      averageSpeedKmh: 20
     });
     fixture.detectChanges();
 
@@ -238,7 +222,7 @@ describe('RoutePlanFormComponent', () => {
       pointALatitude: 52.0,
       pointALongitude: 21.0,
       pointBLatitude: 52.5,
-      pointBLongitude: 21.5,
+      pointBLongitude: 21.5
     });
     fixture.detectChanges();
 
@@ -252,7 +236,7 @@ describe('RoutePlanFormComponent', () => {
       pointALatitude: 52.0,
       pointALongitude: 21.0,
       pointBLatitude: 50.0,
-      pointBLongitude: 19.9,
+      pointBLongitude: 19.9
     });
 
     fixture.componentInstance.swapPoints();
@@ -265,9 +249,7 @@ describe('RoutePlanFormComponent', () => {
   it('submits direct point A/B mode by calling planDirectRoute with the entered coordinates', () => {
     const fixture = TestBed.createComponent(RoutePlanFormComponent);
     const apiService = TestBed.inject(RoutePlanApiService);
-    const planDirectRouteSpy = spyOn(apiService, 'planDirectRoute').and.returnValue(
-      of({} as PlanRouteResponse),
-    );
+    const planDirectRouteSpy = spyOn(apiService, 'planDirectRoute').and.returnValue(of({} as PlanRouteResponse));
 
     fixture.componentInstance.form.patchValue({
       routeMode: 'direct',
@@ -276,7 +258,7 @@ describe('RoutePlanFormComponent', () => {
       pointALatitude: 52.0,
       pointALongitude: 21.0,
       pointBLatitude: 52.5,
-      pointBLongitude: 21.5,
+      pointBLongitude: 21.5
     });
     fixture.detectChanges();
 
@@ -288,9 +270,10 @@ describe('RoutePlanFormComponent', () => {
       '2026-08-01T10:00:00',
       20,
       null,
-      20,
+      20
     );
   });
+
   describe('departure time warnings', () => {
     beforeEach(() => {
       jasmine.clock().install();
@@ -305,19 +288,17 @@ describe('RoutePlanFormComponent', () => {
       fixture.detectChanges();
 
       const el: HTMLElement = fixture.nativeElement;
-      const hint = el.querySelector('#departureAtPastHint');
-      expect(hint?.textContent).toContain('in the past');
-      expect(el.querySelector('#departureAt')!.getAttribute('aria-describedby')).toBe(
-        'departureAtPastHint',
-      );
-      // Only a warning: the past departure does not block planning on its own.
+      expect(el.querySelector('#departureAtPastHint')?.textContent).toContain('in the past');
+      expect(el.querySelector('#departureAt')!.getAttribute('aria-describedby')).toBe('departureAtPastHint');
+
+      // Only a warning: a past departure does not block planning on its own.
       fixture.componentInstance.form.patchValue({
         routeMode: 'direct',
+        averageSpeedKmh: 18,
         pointALatitude: 52,
         pointALongitude: 21,
         pointBLatitude: 52.5,
-        pointBLongitude: 21.5,
-        averageSpeedKmh: 18,
+        pointBLongitude: 21.5
       });
       expect(fixture.componentInstance.canSubmit()).toBeTrue();
     });
